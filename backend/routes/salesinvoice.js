@@ -11,7 +11,7 @@ const {
 const router = express.Router()
 
 router.get('/',getAllSalesInvoices)
-router.post('/addsalesinvoice', createSalesInvoice)
+router.post('/add', createSalesInvoice)
 router.get('/:invoice_number', getSingleSalesInvoice)
 router.delete('/:invoice_number',deleteSalesInvoice)
 router.patch('/:invoice_number',updateSalesInvoice)

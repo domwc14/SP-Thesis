@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { WorkoutsContextProvider } from './context/WorkoutContext';
 import { AuthContextProvider } from './context/AuthContext';
 
+import { WorkoutsContextProvider } from './context/WorkoutContext';
+import { OverdueSIContextProvider} from './context/OverdueSIContext';
+import { InventoryContextProvider} from './context/InventoryContext';
 //import reportWebVitals from './reportWebVitals';  This was deleted, not important
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -12,7 +14,11 @@ root.render(
   <React.StrictMode>
   <AuthContextProvider>
       <WorkoutsContextProvider>
+        <InventoryContextProvider>
+        <OverdueSIContextProvider>
         <App />
+        </OverdueSIContextProvider>
+        </InventoryContextProvider>
       </WorkoutsContextProvider>
     </AuthContextProvider>
   </React.StrictMode>

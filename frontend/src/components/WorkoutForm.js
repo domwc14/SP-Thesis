@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
 import { useAuthContext } from "../hooks/useAuthContext"; 
+import { Box, FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+
 const WorkoutForm = () => {
     const{dispatch} = useWorkoutsContext()
     const {user} = useAuthContext()
@@ -47,15 +49,25 @@ const WorkoutForm = () => {
     } 
 
     return (
+        <Box>
         <form className="create" onSubmit={handleSubmit}>
         <h3> Add New Workout</h3>
         <label> Exercize Title</label>
-        <input 
-            type="text" onChange={(e)=> setTitle(e.target.value)}
-            value={title}
-            //className={emptyFields ? emptyFields.includes('title') ? 'error' : '' : ''}
-           className={emptyFields.includes('title') ? 'error': ''}
-        />
+        <FormControl sx={{ width: { xs: '10%', md: 224 } }}>
+            <OutlinedInput
+            size="small"
+            id="header-search"
+            startAdornment={
+                <InputAdornment position="start" sx={{ mr: -0.5 }}>
+                </InputAdornment>
+            }
+            aria-describedby="header-search-text"
+            inputProps={{
+                'aria-label': 'weight'
+            }}
+            placeholder="Search"
+            />
+        </FormControl>
          <label>Load in kg</label>
         <input 
             type="number" onChange={(e)=> setLoad(e.target.value)}
@@ -73,6 +85,7 @@ const WorkoutForm = () => {
         <button>Add Workout</button>
         {error && <div className="error">{error}</div>}
         </form>
+        </Box>
 
     )
 }

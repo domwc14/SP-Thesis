@@ -1,3 +1,6 @@
+//CHANGE createSalesInvoice to match schema na dinagdagan ng Customer field reference
+//CHANGE createSalesInvoice to match schema na dinagdagan ng amount sa purchase list
+//CHANGE total amount is not input but total of purchase list 
 const SalesInvoice = require('../models/salesInvoiceModel')
 const mongoose = require('mongoose')
 const createSalesInvoice = async (req,res) => {
@@ -65,13 +68,44 @@ const updateSalesInvoice = async(req,res)=>{
     res.status(200).json(salesinvoice)
 }
 
+const getDueSalesInvoices = async(req,res)=>{
+    const currentDate = new Date();
+    const page = req.query.page || 1
+    //localhost:4000/email/?page=0
+    const SIPerPage = 5
+
+    const query = {
+        payment_due: { $lt: currentDate },
+        date_paid: { $eq: undefined },
+        $expr: { $lt: ['$amount_paid', '$total_amount'] },
+      };
+
+    const totalSalesInvoices = await SalesInvoice.countDocuments(query);
+
+    const salesinvoices = await SalesInvoice.find(query)
+    .populate('customer')
+    .sort({ invoice_number: 1 })
+    .skip((page - 1) * SIPerPage)
+    .limit(SIPerPage);
+
+    const totalPages = Math.ceil(totalSalesInvoices / SIPerPage);
+
+    res.status(200).json({
+        salesinvoices,
+        totalPages,
+        currentPage: page,
+      });
+
+}
+
 
 module.exports = {
     createSalesInvoice,
     getSingleSalesInvoice,
     getAllSalesInvoices,
     deleteSalesInvoice, //eradicate them from their digital existence!
-    updateSalesInvoice
+    updateSalesInvoice,
+    getDueSalesInvoices
 }
 
 

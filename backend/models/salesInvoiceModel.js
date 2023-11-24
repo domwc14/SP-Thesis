@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema
+const Customer = require('./customerModel')
 
+const Schema = mongoose.Schema
 const salesInvoiceSchema = new Schema ({
     invoice_number: {
         type: String,
@@ -11,6 +12,12 @@ const salesInvoiceSchema = new Schema ({
         type: String,
         required: true
     },
+
+    customer: {  type: Schema.Types.ObjectId,
+        ref: 'Customer', // Reference the 'Customer' model
+        required: true,
+    },
+
     date: {
         type: Date,
         required: true   
@@ -58,6 +65,10 @@ const salesInvoiceSchema = new Schema ({
             type: Number,
             required: true,
           },
+          amount: {
+            type: Number,
+            required: true
+          }
         },
       ],
 })

@@ -7,6 +7,12 @@ const productSchema = new Schema ({
         type: String,
         required: true
     },
+
+    stock: {
+        type: Number,
+        required: true
+    },
+
     type: {
         type: String,
         required: true
@@ -32,8 +38,15 @@ const productSchema = new Schema ({
     },
     unit: {
         type: String
-    }
+    },
+    stocktrigger_at: {
+        type: Number
+    },
+
 })
 
 module.exports = mongoose.model('Product',productSchema)
 //1st argument == collectionname
+
+//stocktrigger_at: notifies if stock level is lower than this
+//also notifies at 0

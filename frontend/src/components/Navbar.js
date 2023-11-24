@@ -16,7 +16,10 @@ const Navbar = () => {
                 <Link to="/">
                     <h1> Workout Buddy</h1>
                 </Link>
-                <nav>
+                <Link to="/email">
+                    <h1>EmailPage</h1>
+                </Link>
+                <nav style={{marginLeft: 'auto', display: 'flex', alignItems: 'center'}}>
                     {user && ( 
                         <div>
                             <span>{user.email}</span>

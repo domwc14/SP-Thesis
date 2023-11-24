@@ -28,7 +28,6 @@ header a {
 }
 .pages{
   max-width: 1400px;
-  padding: 20px;
   margin: 0 auto;
 }
 
@@ -38,7 +37,7 @@ header a {
   grid-template-columns: 3fr 1fr;
   gap: 100px;
 }
-.workout-details {
+.overduesalesinvoice-details {
   background: #fff;
   border-radius: 4px;
   margin: 20px auto;
@@ -46,17 +45,17 @@ header a {
   position: relative;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
 }
-.workout-details h4 {
+.overduesalesinvoice-details h4 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
   color: var(--primary);
 }
-.workout-details p {
+.overduesalesinvoice-details p {
   margin: 0;
   font-size: 0.9em;
   color: #555;
 }
-.workout-details span {
+.overduesalesinvoice-details span {
   position: absolute;
   top: 20px;
   right: 20px;

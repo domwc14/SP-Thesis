@@ -1,14 +1,55 @@
 const Product = require('../models/productModel')
 const mongoose = require('mongoose')
 const createProduct = async (req,res) => {
-    const {product_code, type , size , color ,description, acquisition_price, unit_price, unit} = req.body
+    const {product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit} = req.body
+    
+    // if(!stocktrigger_at){   //if no trigger, default is alerted at 0
+    //     stocktrigger_at = 0; //BUT sometimes we can have items na one-time, dont wanna restock
+    // }
+    //This is for the InventoryForm: so that fields that are required can turn red
+    let emptyFields = []
+    if (!product_code){
+        emptyFields.push('product_code')
+    }
+    if (!stock){
+        emptyFields.push('stock')
+    }
+    if (!type){
+        emptyFields.push('type')
+    }
+    if (!size){
+        emptyFields.push('size')
+    }
+    if (!color){
+        emptyFields.push('color')
+    }
+    if (!acquisition_price){
+        emptyFields.push('acquisition_price')
+    }
+    // if (!description){
+    //     emptyFields.push('description')
+    // }
+    if (!unit_price){
+        emptyFields.push('unit_price')
+    }
+    // if (!unit){
+    //     emptyFields.push('unit')
+    // }
+    // if (!stocktrigger_at){
+    //     emptyFields.push('stocktrigger_at')
+    // }
+    if(emptyFields.length > 0){
+        return res.status(400).json({error: 'Please fill in fields highlighted in red ',emptyFields})
+    }
+    
+    
     try {
         const existingProduct = await Product.findOne({product_code});
         if (existingProduct) {
             // If a customer with the same name exists, return an error response
             return res.status(400).json({ error: "Product with the same product_code already exists." });
         }
-        const product = await Product.create({product_code, type , size , color ,description, acquisition_price, unit_price, unit})
+        const product = await Product.create({product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit})
         res.status(200).json(product)
     } catch (error){
         res.status(400).json({error: error.message})
@@ -45,7 +86,17 @@ const deleteProduct = async (req,res)=> {
 }
 
 const updateProduct = async(req,res)=>{
+    
     const {product_code} = req.params
+
+    let emptyFields = []    //just so we can make the box turn red, but correct error message is still returned @ if !product
+    if (!product_code){
+        emptyFields.push('product_code')
+    }
+    if(emptyFields.length > 0){
+        return res.status(400).json({error: 'Please fill in fields highlighted in red ',emptyFields})
+    }
+
     // if(!mongoose.Types.ObjectId.isValid(id)){
     //     return res.status(404).json({error:'invalid ID'})
     // }
@@ -56,9 +107,12 @@ const updateProduct = async(req,res)=>{
     })
 
     if(!product){
-        return res.status(404).json({error:'no product found by that number/id'})
+        return res.status(404).json({error:'no product found by that number/id',emptyFields})
     }
-    res.status(200).json(product)
+
+    //returns just like getAll including the one updated
+    const products = await Product.find({}).sort({product_code: 1})
+    res.status(200).json(products)
 }
 
 
