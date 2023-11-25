@@ -47,7 +47,7 @@ const createProduct = async (req,res) => {
         const existingProduct = await Product.findOne({product_code});
         if (existingProduct) {
             // If a customer with the same name exists, return an error response
-            return res.status(400).json({ error: "Product with the same product_code already exists." });
+            return res.status(400).json({ error: "Product with the same Product Code already exists.",emptyFields });
         }
         const product = await Product.create({product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit})
         res.status(200).json(product)
@@ -68,21 +68,33 @@ const getSingleProduct = async (req,res)=>{
     // }
     const product = await Product.findOne({ product_code: product_code });
     if(!product){
-        return res.status(404).json({error:'no product found by that product code'})
+        return res.status(404).json({error:'No product found by that product code'})
     }
     res.status(200).json(product)
 }
 
 const deleteProduct = async (req,res)=> {
     const {product_code} = req.params
+
+    let emptyFields = []    //just so we can make the box turn red, but correct error message is still returned @ if !product
+    if (!product_code){
+        emptyFields.push('product_code')
+    }
+    if(emptyFields.length > 0){
+        return res.status(400).json({error: 'Please fill in fields highlighted in red ',emptyFields})
+    }
+
     // if(!mongoose.Types.ObjectId.isValid(id)){
     //     return res.status(404).json({error:'invalid ID'})
     // }
     const product = await Product.findOneAndDelete({ product_code: product_code });
     if(!product){
-        return res.status(404).json({error:'no product found by that number/id'})
+        return res.status(404).json({error:'No product found by that Product Code',emptyFields})
     }
-    res.status(200).json(product)
+
+    const products = await Product.find({}).sort({product_code: 1})
+    res.status(200).json(products)
+
 }
 
 const updateProduct = async(req,res)=>{

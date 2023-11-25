@@ -35,9 +35,7 @@ export const InventoryReducer = (state,action) => {
         case 'UPDATE_PRODUCT':
             //update the item, 
             return{
-                //action.payload is a single new workout
-                //... state- > current state
-                //state.workouts array of current existing workouts
+                //the object returned is all the products
                 inventory_list: action.payload
 
                 // inventory_list: [action.payload,...state.inventory_list]
@@ -46,7 +44,7 @@ export const InventoryReducer = (state,action) => {
     
         case 'DELETE_PRODUCT':
             return {
-                inventory_list: state.inventory_list.filter((p)=>p._id !== action.payload._id)
+                inventory_list: action.payload
             }
 
         default:
