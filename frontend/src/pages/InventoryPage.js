@@ -1,4 +1,4 @@
-import { useState, useEffect,createRef} from "react";
+import { useState, useEffect} from "react";
 import { useInventoryContext } from "../hooks/useInventoryContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
@@ -28,8 +28,7 @@ import Stack from '@mui/material/Stack';
 
 //components
 import NavDrawer from "../components/NavDrawer";
-import Searchbar from "../components/Searchbar";
-import { Button, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import AddInventoryForm from "../components/AddInventoryForm";
 import UpdateInventoryForm from "../components/UpdateInventoryForm";
 import DeleteInventoryForm from "../components/DeleteInventoryForm";

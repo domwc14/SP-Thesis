@@ -21,16 +21,20 @@
       }
 
 
-
     const OverdueSalesInvoiceDetails = ({overdueSI}) => {
 
     //className="overduesalesinvoice-details"
         return (
             <div >
-                <h4> {overdueSI.invoice_number}</h4>
+                <h4> Invoice Number: {overdueSI.invoice_number}</h4>
                 {/* <p><strong> Load(kg):</strong>{overdueSI.customer.name}</p> */}
-                <p><strong> Total Amount:</strong>{overdueSI.total_amount}</p>
                 <p><strong> Customer Name:</strong>{overdueSI.customer.name}</p>
+                <p><strong> Date:</strong>{overdueSI.date}</p>
+                <p><strong> Payment Due: </strong>{overdueSI.payment_due}</p>
+                <p><strong> Amount Paid: </strong>{overdueSI.amount_paid}</p>
+                <p><strong> Date Paid: </strong>{overdueSI.date_paid}</p>
+                <p><strong> Payment Terms </strong>{overdueSI.payment_terms}</p>
+                <p><strong> Total Amount:</strong>{overdueSI.total_amount}</p>
 
                 <Button onClick={Download_PDF.bind(this, overdueSI)}> Download the PDF </Button>
                 {/* Button click is like that so that it only ACTUALLY runs ONLY when its clicked, NOT after initial page rendering */}
