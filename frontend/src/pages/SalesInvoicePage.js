@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import { useInventoryContext } from "../hooks/useInventoryContext";
+import { useSalesInvoiceContext } from "../hooks/useSalesInvoiceContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 
@@ -29,9 +29,9 @@ import Stack from '@mui/material/Stack';
 //components
 import NavDrawer from "../components/NavDrawer";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import AddInventoryForm from "../components/AddInventoryForm";
-import UpdateInventoryForm from "../components/UpdateInventoryForm";
-import DeleteInventoryForm from "../components/DeleteInventoryForm";
+import AddSalesInvoiceForm from "../components/AddSalesInvoiceForm";
+import UpdateSalesInvoiceForm from "../components/UpdateSalesInvoiceForm";
+import DeleteSalesInvoiceForm from "../components/DeleteInventoryForm";
 import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
 
 
@@ -130,20 +130,22 @@ function TablePaginationActions(props) {
         },
       }));
 
+
+//YOU ARE HERE YOU ARE HERE YOU ARE HERE
     
 //DIALOGUES 
 
 const AddFormDialog = ({ open, onClose }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Add Inventory</DialogTitle>
+            <DialogTitle>Add Sales Invoice</DialogTitle>
             <DialogContent>
                 {/* Your form content goes here */}
-                <AddInventoryForm/>
+                <AddSalesInvoiceForm/>
                 {/* <WorkoutForm/> */}
             </DialogContent>
             <DialogActions>
-                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="AddInventoryForm">Add</Button>
+                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="AddSalesInvoiceForm">Add</Button>
                 <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
@@ -153,15 +155,15 @@ const AddFormDialog = ({ open, onClose }) => {
 const UpdateFormDialog = ({ open, onClose }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Update an Item</DialogTitle>
+            <DialogTitle>Update a Sales Invoice</DialogTitle>
             <DialogContent>
 
                 {/* Your form content goes here */}
-                <UpdateInventoryForm/>
+                <UpdateSalesInvoiceForm/>
 
             </DialogContent>
             <DialogActions>
-                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="UpdateInventoryForm">Update</Button>
+                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="UpdateSalesInvoiceForm">Update</Button>
                 <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
@@ -171,14 +173,14 @@ const UpdateFormDialog = ({ open, onClose }) => {
 const DeleteFormDialog = ({ open, onClose }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Delete Inventory</DialogTitle>
+            <DialogTitle>Delete SalesInvoice</DialogTitle>
             <DialogContent>
                 {/* Your form content goes here */}
-                <DeleteInventoryForm/>
+                <DeleteSalesInvoiceForm/>
 
             </DialogContent>
             <DialogActions>
-                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="DeleteInventoryForm">Delete</Button>
+                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="DeleteSalesInvoiceForm">Delete</Button>
                 <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
@@ -189,15 +191,15 @@ const DeleteFormDialog = ({ open, onClose }) => {
 
 //START OF EXPORTED FUNCTION / RETURN 
 
-const InventoryPage = () => {
+const SalesInvoicePage = () => {
     const [isAddFormVisible, setAddFormVisible] = useState(false);
     const [isUpdateFormVisible, setUpdateFormVisible] = useState(false);
     const [isDeleteFormVisible, setDeleteFormVisible] = useState(false);
-    const {inventory_list,dispatch} = useInventoryContext()
+    const {sales_invoice_list,dispatch} = useSalesInvoiceContext()
     const [query,setQuery] = useState('')
     const {user} = useAuthContext()
 
-    console.log("b4 fetch JSON",inventory_list)
+    console.log("b4 fetch JSON",sales_invoice_list)
 
     console.log("QUERY",query)
 
@@ -224,15 +226,15 @@ const InventoryPage = () => {
 
 
     useEffect(()=>{
-        const fetchInventory = async () => {
-            const response = await fetch('/product',{
+        const fetchSalesInvoice = async () => {
+            const response = await fetch('/salesinvoice',{
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
             })
             const json = await response.json() //its the response json from server
             if(response.ok){
-                dispatch({type:'SET_INVENTORY',payload: json})
+                dispatch({type:'SET_SALES_INVOICE',payload: json})
                 console.log("json FETCHED")
                 //dispatch fires to workoutsReducer - > returns action - > updates the state sa useReducer
                 //yung workouts: null magiging action.payload which is the json here
@@ -245,15 +247,14 @@ const InventoryPage = () => {
         }
 
         if(user){
-            fetchInventory()
+            fetchSalesInvoice()
         }
     },[dispatch,user]) //everytime these dependencies are run / changed, rerun this function (in this case everytime may dispatch, re-run)
     
     
-
-    console.log("AFTER FETCH JSON",inventory_list)
-    console.log("TYPE:",typeof(inventory_list))
-    //const inventoryJSONtoArray = Object.entries(inventory_list)
+    console.log("AFTER FETCH JSON",sales_invoice_list)
+    console.log("TYPE:",typeof(sales_invoice_list))
+    //const inventoryJSONtoArray = Object.entries(sales_invoice)
     // console.log("ARRAY TYPE:",typeof(inventoryJSONtoArray))
     // console.log("ARRAY ACTUAL:",inventoryJSONtoArray)
     //console.log("LIST",inventoryJSONtoArray)
@@ -264,17 +265,17 @@ const InventoryPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    if (inventory_list === null) {          //BUFFER while d pa nag loload
+    if (sales_invoice_list === null) {          //BUFFER while d pa nag loload
         return <div>Loading...</div>;
     }
 
-    const filtered_inventory_list = inventory_list.filter(item=>{
-        return item.product_code.toLowerCase().includes(query.toLowerCase())
+    const filtered_sales_invoice = sales_invoice_list.filter(item=>{
+        return item.invoice_number.toLowerCase().includes(query.toLowerCase())
         //maybe if need. try item.$variablefieldfind
     })
 
-     const rows = filtered_inventory_list
-    //const rows = inventory_list
+     const rows = filtered_sales_invoice
+    //const rows = sales_invoice
 
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -298,7 +299,6 @@ const InventoryPage = () => {
             <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
             <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
             <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton>
-            {/* YOU ARE HERE  */}
             <Box sx={{ width: '10%', ml: { xs: 0, md: 1 } }}>
                 <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
@@ -316,31 +316,31 @@ const InventoryPage = () => {
                     />
                 </FormControl>
             </Box>
-
-
-
-            {/* <Searchbar/> */}
             <AddFormDialog open={isAddFormVisible} onClose={handleCloseForms} />
             <UpdateFormDialog open={isUpdateFormVisible} onClose={handleCloseForms} />
             <DeleteFormDialog open={isDeleteFormVisible} onClose={handleCloseForms} />
 
         </Stack>
 
-        
-        {/* stickyHeader */}
+
         <TableContainer component={Paper}>
-        <Table stickyHeader sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Product Code</StyledTableCell>
-            <StyledTableCell align="right">Stock</StyledTableCell>
-            <StyledTableCell align="right">Type</StyledTableCell>
-            <StyledTableCell align="right">Size</StyledTableCell>
-            <StyledTableCell align="right">Color</StyledTableCell>
+            <StyledTableCell>Invoice Number</StyledTableCell>
+            <StyledTableCell align="right">Reference_PO</StyledTableCell>
+            <StyledTableCell align="right">Customer</StyledTableCell>
+            <StyledTableCell align="right">Date</StyledTableCell>
             <StyledTableCell align="right">Description</StyledTableCell>
-            <StyledTableCell align="right">Acquisition Price</StyledTableCell>
-            <StyledTableCell align="right">Unit Price</StyledTableCell>
-            <StyledTableCell align="right">Unit</StyledTableCell>
+            <StyledTableCell align="right">Total Amount</StyledTableCell>
+            <StyledTableCell align="right">Payment Terms</StyledTableCell>
+            <StyledTableCell align="right">Payment Due</StyledTableCell>
+            <StyledTableCell align="right">Date Paid</StyledTableCell>
+            <StyledTableCell align="right">Amount Paid</StyledTableCell>
+            <StyledTableCell align="right">BIR 2307</StyledTableCell>
+            <StyledTableCell align="right">SR</StyledTableCell>
+            <StyledTableCell align="right">CR Number</StyledTableCell>
+            <StyledTableCell align="right">Purchase List</StyledTableCell>
           </TableRow>
         </TableHead>
             <TableBody>
@@ -348,33 +348,48 @@ const InventoryPage = () => {
                 ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 : rows
             ).map((row) => (
-                <StyledTableRow key={row.product_code}>
+                <StyledTableRow key={row.invoice_number}>
                 <TableCell style={{ width: 120 }} component="th" scope="row">
-                    {row.product_code}
+                    {row.invoice_number}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.stock}
+                    {row.reference_PO}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.type}
+                    {row.customer.name}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.size}
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
-                    {row.color}
+                    {row.date}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
                     {row.description}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.acquisition_price}
+                    {row.total_amount}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.unit_price}
+                    {row.payment_terms}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.unit}
+                    {row.payment_due}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    {row.date_paid}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    {row.amount_paid}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    {row.BIR_2307}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    {row.SR}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    {row.CR_Number}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="right">
+                    <h4>Purchase List Here*</h4>
                 </TableCell>
                 </StyledTableRow>
             ))}
@@ -412,6 +427,6 @@ const InventoryPage = () => {
 }
 
 
-export default InventoryPage;
+export default SalesInvoicePage;
 
 //page={page} onChange={handlePage}

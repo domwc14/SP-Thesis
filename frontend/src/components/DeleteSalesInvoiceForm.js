@@ -3,6 +3,7 @@ import { useInventoryContext } from "../hooks/useInventoryContext";
 import { useAuthContext } from "../hooks/useAuthContext"; 
 import Box from '@mui/material/Box';
 
+
 const DeleteInventoryForm = () => {
     const{dispatch} = useInventoryContext()
     const {user} = useAuthContext()

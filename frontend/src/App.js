@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Navbar from './components/Navbar'
 import EmailPage from './pages/EmailPage'
 import InventoryPage from './pages/InventoryPage'
+import SalesInvoicePage from "./pages/SalesInvoicePage";
 
 
 //Navigate vs Link, basically acts the same (direct to page). Link does a navigate. navigate is the act of direction
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={user ? <Home /> : <Navigate to="/login"/>} /> 
             <Route path="/email" element={user ? <EmailPage />: <Navigate to="/login"/>} />
             <Route path="/product" element={user ? <InventoryPage />: <Navigate to="/"/>} />
+            <Route path="/salesinvoice" element={user ? <SalesInvoicePage />: <Navigate to="/"/>} />
             <Route path="/login" element={!user ? <Login />: <Navigate to="/"/>} />
             <Route path="/signup" element={!user ? <Signup />: <Navigate to="/"/>} />
           </Routes>

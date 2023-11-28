@@ -7,6 +7,9 @@ import { AuthContextProvider } from './context/AuthContext';
 import { WorkoutsContextProvider } from './context/WorkoutContext';
 import { OverdueSIContextProvider} from './context/OverdueSIContext';
 import { InventoryContextProvider} from './context/InventoryContext';
+import {SalesInvoiceContextProvider} from './context/SalesInvoiceContext';
+
+
 //import reportWebVitals from './reportWebVitals';  This was deleted, not important
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -16,7 +19,9 @@ root.render(
       <WorkoutsContextProvider>
         <InventoryContextProvider>
         <OverdueSIContextProvider>
-        <App />
+        <SalesInvoiceContextProvider>
+          <App />
+        </SalesInvoiceContextProvider>
         </OverdueSIContextProvider>
         </InventoryContextProvider>
       </WorkoutsContextProvider>

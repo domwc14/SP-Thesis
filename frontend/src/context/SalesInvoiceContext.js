@@ -1,17 +1,17 @@
 import {createContext, useReducer} from 'react'
 
-export const InventoryContext = createContext()
+export const SalesInvoiceContext = createContext()
 
 //state is previous state
 //action is the object from dispatch function, the one with the type: and payload
-export const InventoryReducer = (state,action) => {
-    console.log("INV: State Before Update", state);
+export const SalesInvoiceReducer = (state,action) => {
+    console.log("SI: State Before Update", state);
     switch(action.type) {
-        case 'SET_INVENTORY':
+        case 'SET_SALES_INVOICE':
 
             //const newState = {
                 //...state,
-                ///inventory_list: action.payload
+                ///sales_invoice_list: action.payload
                 // ...state,
                 // overdueSI: {
                 //     //...state.overdueSI,
@@ -22,29 +22,29 @@ export const InventoryReducer = (state,action) => {
             //};
             //console.log("INV: State After Update", newState);
             console.log(action.payload)
-            return {inventory_list: action.payload}
+            return {sales_invoice_list: action.payload}
 
-        case 'CREATE_PRODUCT':
+        case 'CREATE_SALES_INVOICE':
             return{
                 //action.payload is a single new workout
                 //... state- > current state
                 //state.workouts array of current existing workouts
-                inventory_list:[action.payload,...state.inventory_list]
+                sales_invoice_list:[action.payload,...state.sales_invoice_list]
             }
         
-        case 'UPDATE_PRODUCT':
+        case 'UPDATE_SALES_INVOICE':
             //update the item, 
             return{
                 //the object returned is all the products
-                inventory_list: action.payload
+                sales_invoice_list: action.payload
 
-                // inventory_list: [action.payload,...state.inventory_list]
+                // sales_invoice_list: [action.payload,...state.sales_invoice_list]
             }
         
     
-        case 'DELETE_PRODUCT':
+        case 'DELETE_SALES_INVOICE':
             return {
-                inventory_list: action.payload
+                sales_invoice_list: action.payload
             }
 
         default:
@@ -52,7 +52,7 @@ export const InventoryReducer = (state,action) => {
     }
 }
 
-export const InventoryContextProvider = ({children}) => {
+export const SalesInvoiceContextProvider = ({children}) => {
     //state IF we are passing MORE THAN 2 VARIABLES
     // const initialState = {
     //     overdueSI: {
@@ -61,7 +61,7 @@ export const InventoryContextProvider = ({children}) => {
     //       currentPage: 1,
     //     },
     //   };
-    const initialState = {inventory_list: null}
+    const initialState = {sales_invoice_list: null}
 
 
 //similar to useState, [initialstate_var, updatestatevalue_var]
@@ -69,14 +69,14 @@ export const InventoryContextProvider = ({children}) => {
 //type: string that describes the func
 //payload: data we need
 
-//TO REVIEW: WHY ...state does NOT WORK
+    //TO REVIEW: WHY ...state does NOT WORK
 //<OverdueSIContext.Provider value={{...state,dispatch}}>
 
-    const [state,dispatch] = useReducer(InventoryReducer,initialState)
+    const [state,dispatch] = useReducer(SalesInvoiceReducer,initialState)
     // dispatch({type: 'SET_OVERDUESI',payload:[{},{}]})
     return (
-        <InventoryContext.Provider value={{...state,dispatch}}>  
+        <SalesInvoiceContext.Provider value={{...state,dispatch}}>  
             {children}
-        </InventoryContext.Provider>
+        </SalesInvoiceContext.Provider>
     )
 }

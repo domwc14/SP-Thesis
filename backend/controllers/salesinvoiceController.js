@@ -23,7 +23,12 @@ const createSalesInvoice = async (req,res) => {
 }
 
 const getAllSalesInvoices = async (req,res) => {
-    const salesinvoice = await SalesInvoice.find({}).sort({invoice_number: 1})
+    const salesinvoice = await SalesInvoice.find({})
+    .populate('customer')
+    .sort({ invoice_number: 1 });
+
+    // const salesinvoice = await SalesInvoice.find({}).sort({invoice_number: 1})
+    // .populate('customer')
     res.status(200).json(salesinvoice)
 }
 
