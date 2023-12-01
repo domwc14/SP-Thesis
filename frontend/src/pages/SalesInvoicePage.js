@@ -31,7 +31,7 @@ import NavDrawer from "../components/NavDrawer";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import AddSalesInvoiceForm from "../components/AddSalesInvoiceForm";
 import UpdateSalesInvoiceForm from "../components/UpdateSalesInvoiceForm";
-import DeleteSalesInvoiceForm from "../components/DeleteInventoryForm";
+import DeleteSalesInvoiceForm from "../components/DeleteSalesInvoiceForm";
 import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
 
 

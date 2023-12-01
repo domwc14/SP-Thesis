@@ -1,160 +1,371 @@
-import { useState } from "react"
-import { useInventoryContext } from "../hooks/useInventoryContext";
+//TO CONSIDER: currently, this changes the entire purchase_list. 
+//option 1: input invoice_name -> click button -> show all current details, articles table <div> click to delete. add to cart.
+//option 2: 2 Buttons for submitting: 1. update invoice where purchase_list are added/appended, update where purchase_list is OVERWRITTEN
+//option 3: (easiest and current) normal. purchase list_  is entirely overwritten
+
+
+import { useState, useEffect } from "react"
+import { useSalesInvoiceContext } from "../hooks/useSalesInvoiceContext";
 import { useAuthContext } from "../hooks/useAuthContext"; 
 import Box from '@mui/material/Box';
+import { Button } from "@mui/material";
 
 
-const UpdateInventoryForm = () => {
-    const{dispatch} = useInventoryContext()
+const UpdateSalesInvoiceForm = () => {
+    const{dispatch} = useSalesInvoiceContext()
     const {user} = useAuthContext()
 
-    const [product_code,setProduct_code] = useState('')
-    const [stock,setStock] = useState('')
-    const [type,setType] = useState('')
-    const [size,setSize] = useState('')
-    const [color,setColor] = useState('')
+    const [invoice_number,setInvoice_number] = useState('')
+    const [reference_PO,setReference_PO] = useState('')
+    //customer_name so that we can search an id with that name
+    const [customer_name,setCustomer_name] = useState('')
+    const [date,setDate] = useState('')
     const [description,setDescription] = useState('')
-    const [acquisition_price,setAcquisition_price] = useState('')
-    const [unit_price,setUnit_price] = useState('')
-    const [unit,setUnit] = useState('')
-    const [stocktrigger_at,setStocktrigger_at] = useState('')
+    //const [total_amount,setTotal_amount] = useState('')
+    const [payment_terms,setPayment_terms] = useState('')
+    const [payment_due,setPayment_due] = useState('')
+    const [date_paid,setDate_paid] = useState('')
+    const [amount_paid,setAmount_paid] = useState('')
+    const [BIR_2307,setBIR_2307] = useState('')
+    const [SR,setSR] = useState('')
+    const [CR_Number,setCR_Number] = useState('')
+
+    //purchase list will look like this: 3 text boxes para sa
+    // p_code;75,350000; then click Button "add an item to list"
+    //then display the current list of items below or above
+
+    const [product_code,setProduct_code] = useState('')
+    const [quantity,setQuantity] = useState('')
+    const [amount,setAmount] = useState('')
+
+    // const [bought_item,setBought_item] = useState(null)
+    const [purchase_list,setPurchaseList] = useState([])
+
     const [emptyFields,setEmptyFields] = useState([])
+    const [articlesEmptyFields,setArticlesEmptyFields] = useState([])
     const [error,setError] = useState(null)
 
 
+    const AddToCartChecker = () => {
+        let ok = 1
+        console.log("Check P_list", purchase_list)
+        console.log("TYPE OF P LIST", typeof(purchase_list))
+        // optional; if item already exists in purchase list. (actually doesnt matter. duplicates is logically fine in backend)
+        const exists = purchase_list.some(article=> article.product_code === product_code); 
+        if (exists) {
+            ok = 2
+            return ok
+        }
+        if( (product_code === '' && quantity === '' && amount === '') || (product_code !== '' && quantity !== '' && amount !== '')  ){
+            return ok
+        }
+        else{
+            //not ok
+            if(product_code === ''){
+                setArticlesEmptyFields(current => [...current,'product_code'])
+                ok = 0
+            }
+            if(quantity === ''){
+                setArticlesEmptyFields(current => [...current,'quantity'])
+                ok = 0
+            }
+            if(amount === ''){
+                setArticlesEmptyFields(current => [...current,'amount'])
+                ok = 0
+            }  
+            ok = 0
+            return ok
+        }
+    }
+
+    const handleAddToCart = async (e) => {
+        setArticlesEmptyFields([])
+        e.preventDefault()  //dont refresh page
+        const response = await AddToCartChecker()   //wait for this to finish, if response is ok (1) is yes
+
+        //articlesEmptyFields.length > 0
+        if(response === 0){
+            setError("Please fill in fields highlighted in red")
+            console.log("ARTICLE LIST", articlesEmptyFields)
+            return
+        }
+
+        if(response === 2){
+            setError("The item already exists in the purchase list")
+            console.log("ARTICLE LIST", articlesEmptyFields)
+            return
+        }
+        
+        const bought_item = {product_code,quantity,amount}
+        console.log("itemdetails", bought_item)
+        setPurchaseList([bought_item,...purchase_list]);
+        setError(null)
+    }
+
+    
+    // useEffect(() => {            //ASYNCH CHECK SA purchase_list, DISABLE ADD BUTTON, ENABLE IT ONLY AFTER THIS
+    //     console.log("USEEFFECT PURCHASE LIST CHECK",purchase_list);
+    //   }, [purchase_list]);
+    
 
     const handleSubmit = async (e) => {
-         e.preventDefault() //page is not refreshed
+        e.preventDefault() //page is not refreshed
+        setError(null)
+        setEmptyFields([])
+        console.log("ENTER")
          if(!user){
             setError('There is no user. Log in first')
             return
-         }
+        }
 
-         //... 
-         const product = {
-            ...(product_code && { product_code }),
-            ...(stock && { stock }),
-            ...(type && { type }),
-            ...(size && { size }),
-            ...(color && { color }),
+        if (!invoice_number){
+            setError("What Invoice are we changing?")
+            setEmptyFields(['invoice_number'])
+            return  
+        }
+
+        let customerjson = null
+        //if change customer then send request to server, 
+        if(customer_name.length !== 0){
+            console.log("changeing customer")
+            const response_customer = await fetch (`/customers/${customer_name}`,{
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            if (!response_customer.ok) {
+                const errorData = await response_customer.json();
+                setError(errorData.error);
+                setEmptyFields(errorData.emptyFields);
+                return;
+            }
+        
+            // Update the value of the existing variable, don't redeclare
+            customerjson = await response_customer.json();
+        }
+        
+        const salesinvoice = {
+            ...(invoice_number && { invoice_number }),
+            ...(reference_PO && { reference_PO }),
+            ...(customerjson && { customer: customerjson._id }),
+            ...(date && { date }),
             ...(description && { description }),
-            ...(acquisition_price && { acquisition_price }),
-            ...(unit_price && { unit_price }),
-            ...(unit && { unit }),
-            ...(stocktrigger_at && { stocktrigger_at }),
+            //total_amount see backend
+            ...(payment_terms && { payment_terms }),
+            ...(payment_due && { payment_due }),
+            ...(date_paid && { date_paid }),
+            ...(amount_paid && { amount_paid }),
+            ...(BIR_2307 && {BIR_2307}),
+            ...(SR && {SR}),
+            ...(CR_Number && {CR_Number}),
+            ...(purchase_list && { purchase_list }),
          };
 
-         const response = await fetch('/product/'+product_code,{
+        const response = await fetch('/salesinvoice/'+invoice_number,{
             method:'PATCH',
-            body: JSON.stringify(product),
+            body: JSON.stringify(salesinvoice),
             headers:{
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
             }
-         })
-         //remember if success, we sendback the object, else send error
-         const json = await response.json() //this json is the response from the backend.
-         if (!response.ok){
+        })
+            //remember if success, we sendback the object, else send error
+        const json = await response.json() //this json is the response from the backend.
+        if (!response.ok){
             setError(json.error)
             setEmptyFields(json.emptyFields)
-         }
-         if(response.ok){
+        }
+        if(response.ok){
             //resets the form back to empty strings
-            setProduct_code('')
-            setStock('')
-            setType('')
-            setSize('')
-            setColor('')
+            setInvoice_number('')
+            setReference_PO('')
+            setCustomer_name('')
+            setDate('')
             setDescription('')
-            setAcquisition_price('')
-            setUnit_price('')
-            setUnit('')
-            setStocktrigger_at('')
+            setPayment_terms('')
+            setPayment_due('')
+            setDate_paid('')
+            setAmount_paid('')
+            setBIR_2307('')
+            setSR('')
+            setCR_Number('')
+            setProduct_code('')
+            setQuantity('')
+            setAmount('')
+
+            
+            setPurchaseList('')
+            setArticlesEmptyFields([])
             setError(null)
             setEmptyFields([])
-            console.log('Product Updated', json)
-            dispatch({type:'UPDATE_PRODUCT',payload: json})
-            // if (onSubmit) {
-            //    onSubmit();
-            // }
-         }
+            console.log('Sales Invoice UPDATED', json)
+            dispatch({type:'UPDATE_SALES_INVOICE',payload: json})
+        }
+
+        //customer_id: customer._id because everything else is named same except for this field
+    
 
     } 
 
 
+
     return (
         <Box>
-        <form id="UpdateInventoryForm" className="create" onSubmit={handleSubmit}>
-        <h3> Update Product </h3>
-        <label> Product Code / Name</label>
+        <form id="UpdateSalesInvoiceForm" className="create" onSubmit={handleSubmit}>
+        <h3> Update a Sales Invoice</h3>
+        <label> Invoice Number</label>
         <input 
-            type="text" onChange={(e)=> setProduct_code(e.target.value)}
-            value={product_code}
-            className={emptyFields.includes('product_code') ? 'error': ''}
-        />
+            type="text" onChange={(e)=> setInvoice_number(e.target.value)}
+            value={invoice_number}
 
-        {error && <div className="error">{error}</div>}
-        
-         <label>Stock</label>
-        <input 
-            type="number" onChange={(e)=> setStock(e.target.value)}
-            value={stock}
-
+           className={emptyFields.includes('invoice_number') ? 'error': ''}
         />
-        <label> Type </label>
+         <label>Reference PO</label>
         <input 
-            type="text" onChange={(e)=> setType(e.target.value)}
-            value={type}
+            type="text" onChange={(e)=> setReference_PO(e.target.value)}
+            value={reference_PO}
           
         />
-         <label>Size</label>
-        <input 
-            type="text" onChange={(e)=> setSize(e.target.value)}
-            value={size}
-         
 
-        />
-        <label>Color</label>
+         <label>Customer Name</label>
         <input 
-            type="text" onChange={(e)=> setColor(e.target.value)}
-            value={color}
-
+            type="text" onChange={(e)=> setCustomer_name(e.target.value)}
+            value={customer_name}
+          
         />
-        <label>Description</label>
+        
+        {/* TRY TRY TRY TO DO //try get current date  */} 
+        <label> Date MM/DD/YYYY </label>
+        <input 
+            type="date" onChange={(e)=> setDate(e.target.value)}
+            value={date}
+          
+        />
+         <label>Description</label>
         <input 
             type="text" onChange={(e)=> setDescription(e.target.value)}
             value={description}
+         
+        />
+
+        {/* //total_amount would have been here */}
+
+        <label>Payment Terms</label>
+        <input 
+            type="text" onChange={(e)=> setPayment_terms(e.target.value)}
+            value={payment_terms}
+          
+        />
+        <label>Payment Due</label>
+        <input 
+            type="date" onChange={(e)=> setPayment_due(e.target.value)}
+            value={payment_due}
 
         />
-        <label>Acquisition Price</label>
+        <label>Date Paid</label>
         <input 
-            type="number" onChange={(e)=> setAcquisition_price(e.target.value)}
-            value={acquisition_price}
+            type="date" onChange={(e)=> setDate_paid(e.target.value)}
+            value={date_paid}
            
         />
-        <label>Unit Price</label>
+        <label>Amount Paid</label>
         <input 
-            type="number" onChange={(e)=> setUnit_price(e.target.value)}
-            value={unit_price}
+            type="number" onChange={(e)=> setAmount_paid(e.target.value)}
+            value={amount_paid}
+
 
         />
-        <label>Unit</label>
+        <label>BIR 2307</label>
         <input 
-            type="text" onChange={(e)=> setUnit(e.target.value)}
-            value={unit}
+            type="number" onChange={(e)=> setBIR_2307(e.target.value)}
+            value={BIR_2307}
+
 
         />
-        <label>Alert me when the stock dips at or below: *optional</label>
+         <label>SR</label>
         <input 
-            type="text" onChange={(e)=> setStocktrigger_at(e.target.value)}
-            value={stocktrigger_at}
+            type="text" onChange={(e)=> setSR(e.target.value)}
+            value={SR}
+
         />
+         <label>CR Number</label>
+        <input 
+            type="text" onChange={(e)=> setCR_Number(e.target.value)}
+            value={CR_Number}
+
+
+        />
+        <h3> Articles </h3>
+        {/* TODO TABLE FOR ARTICLES */}
+        {/* <div className="purchase_list">{purchase_list}</div> */}
+
+        {/* //TO CONSIDER DISPLAY CURRENT PURCHASE LIST HERE?? */}
+        {purchase_list && purchase_list.map((purchase)=>(
+                <div>{purchase.product_code} {purchase.quantity} {purchase.amount}</div>
+            ))}
+
+
+         <label > Product Code / Name </label>
+        <input style={{ width: '350px'}} 
+            type="text" onChange={(e)=> setProduct_code(e.target.value)}
+            value={product_code}
+            className={articlesEmptyFields.includes('product_code') ? 'error': ''}
+
+        />
+        <div style={{ display: 'flex', gap: '30px' }}>
+            <label> Quantity </label>
+            <input style={{ width: '15ch' }}
+                type="number" onChange={(e)=> setQuantity(e.target.value)}
+                value={quantity}
+                className={articlesEmptyFields.includes('quantity') ? 'error': ''}
+
+            />
+            <label> Amount (Php) </label>
+            <input style={{ width: '17ch' }}
+                type="number" onChange={(e)=> setAmount(e.target.value)}
+                value={amount}
+                className={articlesEmptyFields.includes('amount') ? 'error': ''}
+
+            />
+        </div>
+        <div style={{ display: 'flex', gap: '30px' }}>
+        <Button sx={{
+            background: 'var(--primary)',
+            border: 0,
+            color: '#fff',
+            padding: '10px',
+            fontFamily: 'Poppins',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: 'small',
+            '&:hover': {
+                backgroundColor: 'var(--secondary)',
+            },
+            }} onClick={handleAddToCart}> 11.11 Addutocartu </Button>
+        <Button sx={{
+            background: 'var(--primary)',
+            border: 0,
+            color: '#fff',
+            padding: '10px',
+            fontFamily: 'Poppins',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: 'small',
+            '&:hover': {
+                backgroundColor: 'var(--secondary)',
+            },
+            }} onClick={() => setPurchaseList([])}> Clear Purchase List </Button>
         
+        </div>
+        
+        {console.log("final purchase List", purchase_list)}
+        {/* {console.log("final empty", emptyFields)} */}
         {/* <button type="submit" style={{ position: 'fixed', bottom: '40px', right: '600px', }}>Add Workout</button> */}
+        {error && <div className="error">{error}</div>}
         </form>
         </Box>
 
     )
 }
 
-export default UpdateInventoryForm
+export default UpdateSalesInvoiceForm

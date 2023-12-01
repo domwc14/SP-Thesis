@@ -24,12 +24,14 @@ const getAllCustomers = async (req,res) => {
 
 const getSingleCustomer = async (req,res)=>{
     const {name} = req.params
+    let emptyFields = []
     // if(!mongoose.Types.ObjectId.isValid(id)){
     //     return res.status(404).json({error:'invalid ID'})
     // }
     const customer = await Customer.findOne({ name: name });
     if(!customer){
-        return res.status(404).json({error:'no customer found by that name'})
+        emptyFields.push('customer_name')
+        return res.status(404).json({error:'no customer found by that name',emptyFields})
     }
     res.status(200).json(customer)
 }
