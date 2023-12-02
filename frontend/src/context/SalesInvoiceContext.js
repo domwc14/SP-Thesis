@@ -45,6 +45,7 @@ export const SalesInvoiceReducer = (state,action) => {
         case 'DELETE_SALES_INVOICE':
             return {
                 sales_invoice_list: action.payload
+                
             }
 
         default:

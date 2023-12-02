@@ -1,3 +1,7 @@
+//TO CONSIDER?: on update and delete, we are querying DB for the entire documents then returning everything.
+//is this more efficient alternative?  // inventory_list: [action.payload,...state.inventory_list] in reducer function at context might be better
+//but shows the document twice (new from action.payload) and old version from previous state). Still need to filter the old version out of prev state
+
 const Product = require('../models/productModel')
 const mongoose = require('mongoose')
 const createProduct = async (req,res) => {
@@ -92,8 +96,10 @@ const deleteProduct = async (req,res)=> {
         return res.status(404).json({error:'No product found by that Product Code',emptyFields})
     }
 
-    const products = await Product.find({}).sort({product_code: 1})
-    res.status(200).json(products)
+    // const products = await Product.find({}).sort({product_code: 1})
+    // res.status(200).json(products)
+    res.status(200).json(product)
+
 
 }
 
@@ -115,16 +121,17 @@ const updateProduct = async(req,res)=>{
     //instead of ...req.body, we change everything except delivery_id. 
     //we can still use req.body basta walang changing ng product_code sa body naten
     const product = await Product.findOneAndUpdate({
-        product_code:product_code},{...req.body
-    })
+        product_code:product_code},{...req.body},{new: true})
 
     if(!product){
         return res.status(404).json({error:'no product found by that number/id',emptyFields})
     }
 
     //returns just like getAll including the one updated
-    const products = await Product.find({}).sort({product_code: 1})
-    res.status(200).json(products)
+    // const products = await Product.find({}).sort({product_code: 1})
+    // res.status(200).json(products)
+
+    res.status(200).json(product)
 }
 
 
