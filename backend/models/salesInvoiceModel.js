@@ -1,3 +1,4 @@
+//delivery receipt (string of nums)
 const mongoose = require('mongoose')
 
 const Customer = require('./customerModel')

@@ -1,3 +1,4 @@
+//CUSTOMER NEEDS TO HAVE TIN (string of nums)
 const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema

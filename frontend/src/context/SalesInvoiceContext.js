@@ -47,6 +47,14 @@ export const SalesInvoiceReducer = (state,action) => {
                 sales_invoice_list: action.payload
                 
             }
+        
+        // case 'GET_SALES_INVOICE':   //unused
+        // return{
+        //     //action.payload is a single new workout
+        //     //... state- > current state
+        //     //state.workouts array of current existing workouts
+        //     sales_invoice_list: action.payload
+        // }
 
         default:
             return state

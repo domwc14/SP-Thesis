@@ -92,7 +92,6 @@ const createSalesInvoice = async (req,res) => {
             res.status(400).json({error: error.message,emptyFields})
         }
         console.log(existingProduct)
-        // Do something with existingProduct if needed
     }
 
     // purchase_list.forEach(obj => {
@@ -130,12 +129,21 @@ const getAllSalesInvoices = async (req,res) => {
 
 const getSingleSalesInvoice = async (req,res)=>{
     const {invoice_number} = req.params
+    let emptyFields = []
+    console.log("invoice number here", invoice_number)
+    if (!invoice_number){
+        emptyFields.push('invoice_number')
+    }
+    if(emptyFields.length > 0){
+        return res.status(400).json({error: 'Please input the sales invoice number to be printed ',emptyFields})
+    }
     // if(!mongoose.Types.ObjectId.isValid(id)){
     //     return res.status(404).json({error:'invalid ID'})
     // }
-    const salesinvoice = await SalesInvoice.findOne({ invoice_number: invoice_number });
+    const salesinvoice = await SalesInvoice.findOne({ invoice_number: invoice_number }).populate('customer');
     if(!salesinvoice){
-        return res.status(404).json({error:'no sales invoice found by that invoice number'})
+        emptyFields.push('invoice_number')
+        return res.status(404).json({error:'no sales invoice found by that invoice number',emptyFields})
     }
     res.status(200).json(salesinvoice)
 }

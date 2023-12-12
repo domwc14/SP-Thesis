@@ -33,6 +33,7 @@ import AddSalesInvoiceForm from "../components/AddSalesInvoiceForm";
 import UpdateSalesInvoiceForm from "../components/UpdateSalesInvoiceForm";
 import DeleteSalesInvoiceForm from "../components/DeleteSalesInvoiceForm";
 import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import GeneratePDFForm from "../components/GeneratePDFForm";
 
 
 //FRONTEND DESIGN PART
@@ -187,6 +188,23 @@ const DeleteFormDialog = ({ open, onClose }) => {
     );
 };  
 
+const GenerateFormDialog = ({ open, onClose }) => {
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>Generate Documents to Print</DialogTitle>
+            <DialogContent>
+                {/* Your form content goes here */}
+                <GeneratePDFForm/>
+
+            </DialogContent>
+            <DialogActions>
+                <Button size="large" style={{ marginRight: '10px' }} type="submit" form="GeneratePDFForm">Download PDF</Button>
+                <Button onClick={onClose}>Close</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};  
+
 
 
 //START OF EXPORTED FUNCTION / RETURN 
@@ -195,6 +213,8 @@ const SalesInvoicePage = () => {
     const [isAddFormVisible, setAddFormVisible] = useState(false);
     const [isUpdateFormVisible, setUpdateFormVisible] = useState(false);
     const [isDeleteFormVisible, setDeleteFormVisible] = useState(false);
+    const [isGenerateFormVisible, setGenerateFormVisible] = useState(false);
+
     const {sales_invoice_list,dispatch} = useSalesInvoiceContext()
     const [query,setQuery] = useState('')
     const {user} = useAuthContext()
@@ -217,11 +237,16 @@ const SalesInvoicePage = () => {
     const handleOpenDeleteForm = async () => {
         setDeleteFormVisible(true);
     }
+
+    const handleOpenGenerateForm = async () => {
+        setGenerateFormVisible(true);
+    }
     
     const handleCloseForms = () => {
         setAddFormVisible(false);
         setUpdateFormVisible(false);
         setDeleteFormVisible(false);
+        setGenerateFormVisible(false);
     };
 
 
@@ -299,6 +324,7 @@ const SalesInvoicePage = () => {
             <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
             <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
             <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton>
+            <StyledButton onClick={handleOpenGenerateForm}> Generate Documents</StyledButton>
             <Box sx={{ width: '10%', ml: { xs: 0, md: 1 } }}>
                 <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
@@ -319,6 +345,7 @@ const SalesInvoicePage = () => {
             <AddFormDialog open={isAddFormVisible} onClose={handleCloseForms} />
             <UpdateFormDialog open={isUpdateFormVisible} onClose={handleCloseForms} />
             <DeleteFormDialog open={isDeleteFormVisible} onClose={handleCloseForms} />
+            <GenerateFormDialog open={isGenerateFormVisible} onClose={handleCloseForms} />
 
         </Stack>
 
