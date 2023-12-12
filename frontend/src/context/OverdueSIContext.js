@@ -50,8 +50,6 @@ export const OverdueSIContextProvider = ({children}) => {
 //type: string that describes the func
 //payload: data we need
 
-//TO REVIEW: WHY DAFUQ ...state does NOT WORK
-//<OverdueSIContext.Provider value={{...state,dispatch}}>
 
     const [state,dispatch] = useReducer(OverdueSIReducer,initialState)
     // dispatch({type: 'SET_OVERDUESI',payload:[{},{}]})
