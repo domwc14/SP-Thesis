@@ -291,9 +291,9 @@ const InventoryPage = () => {
     };
 
     return (
-    <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:1}}>
+    <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
-        <div>
+        <div >
         <Stack direction="row" spacing={2} marginBottom={2}>
             <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
             <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>

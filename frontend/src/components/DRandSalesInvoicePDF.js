@@ -62,7 +62,7 @@ async function modifyPdf(json) {
   const day = dateObject.getDate();
   const month = dateObject.getMonth() + 1; // Month is zero-based, so we add 1
   const year = dateObject.getFullYear();
-  const formattedDate = `${day}/${month}/${year}`;
+  const formattedDate = `${month}/${day}/${year}`;
   console.log("DATE",formattedDate)
   firstPage.drawText(formattedDate, { x: 413, y: 651, size: 11 })
 

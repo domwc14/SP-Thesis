@@ -113,7 +113,6 @@ const EmailPage = () => {
                     console.log("STATE AFTER Page 2 dispatch", state)
                 }} variant="outlined" shape="rounded" sx={{'& .Mui-selected': {border: '2px solid', },}}/> 
             </Stack>
-            <Button> Generate PDF</Button>
         </div>
     </Box>
     )

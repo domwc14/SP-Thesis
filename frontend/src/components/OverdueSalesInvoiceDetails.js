@@ -1,6 +1,6 @@
     import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
     import { useAuthContext } from "../hooks/useAuthContext"
-
+    import Card from '@mui/material/Card';
 
     //components
     import { Button } from "@mui/material";
@@ -22,23 +22,37 @@
 
 
     const OverdueSalesInvoiceDetails = ({overdueSI}) => {
+        //formatDate
 
+        const dateObject = new Date(overdueSI.date);
+        const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+
+        const dateObject2 = new Date(overdueSI.payment_due);
+        const formattedPaymentDue = new Intl.DateTimeFormat('en-US').format(dateObject2);
     //className="overduesalesinvoice-details"
         return (
-            <div >
+            <div className="overduesalesinvoice-details" >
+                <Card sx={{
+                    border: '2px solid #1aac83', // Green border
+                    padding: '1rem 1.5rem 1rem',
+                    borderRadius: '16px',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', // Box shadow for depth
+                }} variant="outlined">
                 <h4> Invoice Number: {overdueSI.invoice_number}</h4>
                 {/* <p><strong> Load(kg):</strong>{overdueSI.customer.name}</p> */}
-                <p><strong> Customer Name:</strong>{overdueSI.customer.name}</p>
-                <p><strong> Date:</strong>{overdueSI.date}</p>
-                <p><strong> Payment Due: </strong>{overdueSI.payment_due}</p>
+                <p><strong> Customer Name: </strong>{overdueSI.customer.name}</p>
+                
+                <p><strong> Date: </strong>{formattedDate}</p>
+                <p><strong> Payment Due: </strong>{formattedPaymentDue}</p>
                 <p><strong> Amount Paid: </strong>{overdueSI.amount_paid}</p>
-                <p><strong> Date Paid: </strong>{overdueSI.date_paid}</p>
-                <p><strong> Payment Terms </strong>{overdueSI.payment_terms}</p>
-                <p><strong> Total Amount:</strong>{overdueSI.total_amount}</p>
+                <p ><strong> Date Paid: </strong>{overdueSI.date_paid}</p>
+                <p ><strong> Payment Terms: </strong>{overdueSI.payment_terms}</p>
+                <p ><strong> Total Amount:</strong>{overdueSI.total_amount}</p>
 
                 <Button onClick={Download_PDF.bind(this, overdueSI)}> Download the PDF </Button>
                 {/* Button click is like that so that it only ACTUALLY runs ONLY when its clicked, NOT after initial page rendering */}
                 {/* <span className="material-symbols-outlined" onClick={handleTick}>delete</span> */}
+                </Card>
             </div>
         )
     }

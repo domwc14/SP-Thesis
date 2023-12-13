@@ -316,8 +316,9 @@ const SalesInvoicePage = () => {
         setPage(0);
     };
 
+
     return (
-    <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:1}}>
+    <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div>
         <Stack direction="row" spacing={2} marginBottom={2}>
@@ -386,7 +387,11 @@ const SalesInvoicePage = () => {
                     {row.customer.name}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.date}
+                    {(() => {
+                    const dateObject = new Date(row.date);
+                    const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+                    return formattedDate;
+                    })()}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
                     {row.description}
@@ -398,10 +403,18 @@ const SalesInvoicePage = () => {
                     {row.payment_terms}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.payment_due}
+                    {(() => {
+                    const dateObject = new Date(row.payment_due);
+                    const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+                    return formattedDate;
+                    })()}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
-                    {row.date_paid}
+                    {(() => {
+                    const dateObject = row.date_paid ? new Date(row.date_paid) : null;
+                    const formattedDate = dateObject ? new Intl.DateTimeFormat('en-US').format(dateObject) : '';
+                    return formattedDate;
+                    })()}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="right">
                     {row.amount_paid}
