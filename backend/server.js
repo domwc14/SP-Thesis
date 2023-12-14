@@ -14,9 +14,9 @@ const userRoutes = require('./routes/user')
 
 const app = express();
 
-//comment this out when not production I think?
-// const path = require('path')
-// app.use(express.static(path.join(__dirname+"/public")))
+//comment this out when not production
+const path = require('path')
+app.use(express.static(path.join(__dirname+"/public")))
 
 //middleware
 app.use(express.json())
