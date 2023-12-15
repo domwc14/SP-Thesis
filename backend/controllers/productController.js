@@ -6,6 +6,7 @@ const Product = require('../models/productModel')
 const mongoose = require('mongoose')
 const createProduct = async (req,res) => {
     const {product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit} = req.body
+    let {stocktrigger_at} = req.body
     
     // if(!stocktrigger_at){   //if no trigger, default is alerted at 0
     //     stocktrigger_at = 0; //BUT sometimes we can have items na one-time, dont wanna restock
@@ -45,19 +46,22 @@ const createProduct = async (req,res) => {
     if(emptyFields.length > 0){
         return res.status(400).json({error: 'Please fill in fields highlighted in red ',emptyFields})
     }
-    
-    
+    if (!stocktrigger_at){
+        stocktrigger_at = 0
+    }
+
     try {
         const existingProduct = await Product.findOne({product_code});
         if (existingProduct) {
             // If a customer with the same name exists, return an error response
             return res.status(400).json({ error: "Product with the same Product Code already exists.",emptyFields });
         }
-        const product = await Product.create({product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit})
+        const product = await Product.create({product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit,stocktrigger_at})
         res.status(200).json(product)
     } catch (error){
         res.status(400).json({error: error.message})
     }
+
 }
 
 const getAllProducts = async (req,res) => {

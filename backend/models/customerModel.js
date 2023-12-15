@@ -8,6 +8,10 @@ const customerSchema = new Schema ({
         type: String,
         required: true
     },
+    TIN: {
+        type: String,
+        required: true
+    },
     customer_type: {
         type: String,
         required: true   
