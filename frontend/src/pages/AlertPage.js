@@ -9,8 +9,6 @@
 // import Pagination from '@mui/material/Pagination';
 // import Stack from '@mui/material/Stack';
 
-// //YOU ARE HERE
-// //YOU ARE HERE
 
 // //components
 // import OverdueSalesInvoiceDetails from "../components/OverdueSalesInvoiceDetails";
@@ -107,7 +105,7 @@
 // //page={page} onChange={handlePage}
 
 
-
+//TEMPORARY FIX: AlertPage is just copied Email page
 
 
 
