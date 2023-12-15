@@ -44,6 +44,9 @@ const UpdateInventoryForm = () => {
             ...(stocktrigger_at && { stocktrigger_at }),
          };
 
+         //if product_code is empty, it still fetches as
+         //     /product/ 
+         //but since there is not route like that in express, it fetches nothing.
          const response = await fetch('/product/'+product_code,{
             method:'PATCH',
             body: JSON.stringify(product),

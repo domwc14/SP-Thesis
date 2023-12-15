@@ -1,13 +1,13 @@
 import { useState } from "react"
-import { useInventoryContext } from "../hooks/useInventoryContext";
+import { useClientsContext } from "../hooks/useClientsContext";
 import { useAuthContext } from "../hooks/useAuthContext"; 
 import Box from '@mui/material/Box';
 
-const DeleteInventoryForm = () => {
-    const{dispatch} = useInventoryContext()
+const DeleteClientForm = () => {
+    const{dispatch} = useClientsContext()
     const {user} = useAuthContext()
 
-    const [product_code,setProduct_code] = useState('')
+    const [name,setName] = useState('')
     const [emptyFields,setEmptyFields] = useState([])
     const [error,setError] = useState(null)
 
@@ -20,7 +20,7 @@ const DeleteInventoryForm = () => {
             return
          }
 
-         const response = await fetch('/product/'+product_code,{
+         const response = await fetch('/customers/'+name,{
             method:'DELETE',
             headers:{
                 'Authorization': `Bearer ${user.token}`
@@ -34,20 +34,11 @@ const DeleteInventoryForm = () => {
          }
          if(response.ok){
             //resets the form back to empty strings
-            setProduct_code('')
-            // setStock('')
-            // setType('')
-            // setSize('')
-            // setColor('')
-            // setDescription('')
-            // setAcquisition_price('')
-            // setUnit_price('')
-            // setUnit('')
-            // setStocktrigger_at('')
+            setName('')
             setError(null)
             setEmptyFields([])
-            console.log('Product deleted', json)
-            dispatch({type:'DELETE_PRODUCT',payload: json})
+            console.log('Client deleted', json)
+            dispatch({type:'DELETE_CLIENT',payload: json})
          }
 
     } 
@@ -55,13 +46,13 @@ const DeleteInventoryForm = () => {
 
     return (
         <Box>
-        <form id="DeleteInventoryForm" className="create" onSubmit={handleSubmit}>
-        <h3> Delete Product </h3>
-        <label> Product Code / Name</label>
+        <form id="DeleteClientForm" className="create" onSubmit={handleSubmit}>
+        <h3> Delete Client </h3>
+        <label> Client Name</label>
         <input 
-            type="text" onChange={(e)=> setProduct_code(e.target.value)}
-            value={product_code}
-            className={emptyFields.includes('product_code') ? 'error': ''}
+            type="text" onChange={(e)=> setName(e.target.value)}
+            value={name}
+            className={emptyFields.includes('name') ? 'error': ''}
         />
 
         {error && <div className="error">{error}</div>}
@@ -72,4 +63,4 @@ const DeleteInventoryForm = () => {
     )
 }
 
-export default DeleteInventoryForm
+export default DeleteClientForm

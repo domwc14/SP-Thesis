@@ -39,11 +39,11 @@ async function modifyPdf(json) {
 
 //TIN and DR missing
 
-  //THIS IS THE CONTENT FOR THE FIRST PAGE SIPOM. UNCOMMENT FROM HERE AFTER
-  //THIS IS THE CONTENT FOR THE FIRST PAGE SIPOM. UNCOMMENT FROM HERE AFTER
+  //THIS IS THE CONTENT FOR THE FIRST PAGE SIPOM.
 
   //sold to
-  firstPage.drawText(json.customer.name, { x: 78, y: 651, size: 11 })
+  firstPage.drawText(json.customer.name, { x: 78, y: 651, size: 11 }) 
+  firstPage.drawText(json.customer.TIN, { x: 78, y: 636, size: 11 }) 
 
   //address
   if(json.customer.location > 40){
@@ -123,14 +123,10 @@ async function modifyPdf(json) {
     secondPage.drawText(json.customer.location, { x: 78, y: 621, size: 11 })
   }
 
-  // const dateObject2 = new Date(json.date);
-  // const day2 = dateObject.getDate();
-  // const month2 = dateObject.getMonth() + 1; // Month is zero-based, so we add 1
-  // const year2 = dateObject.getFullYear();
-  // const formattedDate2 = `${day}/${month}/${year}`;
+
   console.log("DATE",formattedDate)
   secondPage.drawText(formattedDate, { x: 312, y: 665, size: 11 })
-
+  secondPage.drawText(json.customer.TIN, { x: 312, y: 650, size: 11 })
   secondPage.drawText(json.payment_terms, { x: 312, y: 635, size: 11 })
   secondPage.drawText(json.reference_PO, { x: 312, y: 620, size: 11 })
   secondPage.drawText(json.invoice_number, { x: 312, y: 605, size: 11 })

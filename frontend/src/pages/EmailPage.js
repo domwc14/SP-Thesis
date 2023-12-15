@@ -31,8 +31,6 @@ const EmailPage = () => {
 
     console.log("Component Rendering", state);
 
-    //how do i pass the currentPage here, para masalo ng json (from backend)
-    //FIX HERE
     useEffect( () => {
         const fetchOverdueSI = async () => {
             const response = await fetch(`/email?page=${state.overdueSI.currentPage}`,{

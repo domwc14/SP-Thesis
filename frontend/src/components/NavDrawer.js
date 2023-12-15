@@ -19,6 +19,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import DescriptionIcon from '@mui/icons-material/Description';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import HandshakeIcon from '@mui/icons-material/Handshake';
 
 import { Link } from 'react-router-dom';
 
@@ -29,9 +30,11 @@ export default function PermanentDrawerLeft() {
       const navList = [
         { text: 'SIPOM', icon: <DescriptionIcon sx={{ color: 'green' }}/>, to:'/salesinvoice' },
         { text: 'Inventory', icon: <InventoryIcon sx={{ color: 'green' }}/>, to:'/product' },
+        { text: 'Clients', icon: <HandshakeIcon sx={{ color: 'green' }}/>, to:'/clients' },
         { text: 'Send email', icon: <MailIcon sx={{ color: 'green' }}/>, to:'/email' },
         { text: 'Alerts', icon: <NotificationImportantIcon sx={{ color: 'green' }}/>,to:'/alerts' },
         { text: 'Reports', icon: <AssessmentIcon sx={{ color: 'green' }}/>, to:'/reports' },
+        
       ];
 
 

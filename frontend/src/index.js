@@ -8,6 +8,8 @@ import { WorkoutsContextProvider } from './context/WorkoutContext';
 import { OverdueSIContextProvider} from './context/OverdueSIContext';
 import { InventoryContextProvider} from './context/InventoryContext';
 import {SalesInvoiceContextProvider} from './context/SalesInvoiceContext';
+import {ClientsContextProvider} from './context/ClientsContext';
+import {AlertsContextProvider} from './context/AlertsContext';
 
 
 //import reportWebVitals from './reportWebVitals';  This was deleted, not important
@@ -20,7 +22,11 @@ root.render(
         <InventoryContextProvider>
         <OverdueSIContextProvider>
         <SalesInvoiceContextProvider>
+        <ClientsContextProvider>
+        <AlertsContextProvider>
           <App />
+        </AlertsContextProvider>
+        </ClientsContextProvider>
         </SalesInvoiceContextProvider>
         </OverdueSIContextProvider>
         </InventoryContextProvider>
