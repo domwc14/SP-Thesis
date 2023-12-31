@@ -9,6 +9,10 @@ const Invoice = (overdueSI) => {
         console.log("Inside INVOICE",overdueSI)
         console.log(overdueSI.customer.name)
 
+
+        const dateObject = new Date(overdueSI.date);
+        const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+
         var locationchunks = [];
 
         //const chunkSize = 20;
@@ -20,11 +24,12 @@ const Invoice = (overdueSI) => {
         locationchunks = locationstring.split(',');
 
         //If the variables are in receipt data, no need for render. receipt_data
+        console.log("formattedDate",formattedDate)
     const receipt_data = {
         "id": overdueSI.reference_PO,
         "invoice_no": overdueSI.invoice_number,
         "address": overdueSI.customer.location,
-        "date": overdueSI.date,
+        "date": formattedDate,
         "items": overdueSI.purchase_list
         // "items": [
         // {
@@ -59,7 +64,6 @@ const Invoice = (overdueSI) => {
         // }
         // ]
     }
-
     const styles = StyleSheet.create({
         page: {fontSize: 11,paddingTop: 20,paddingLeft: 40,paddingRight: 40,lineHeight: 1.5,flexDirection: 'column' },
 
@@ -93,7 +97,6 @@ const Invoice = (overdueSI) => {
 
 
     //const logo = require('./persafslogo.png'); // Adjust the path based on your project structure
-
     const InvoiceTitle = () => (
         <View style={styles.titleContainer}>
             <View style={styles.spaceBetween}>

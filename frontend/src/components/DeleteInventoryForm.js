@@ -20,7 +20,7 @@ const DeleteInventoryForm = () => {
             return
          }
 
-         const response = await fetch('/product/'+product_code,{
+         const response = await fetch('/api/product/'+product_code,{
             method:'DELETE',
             headers:{
                 'Authorization': `Bearer ${user.token}`

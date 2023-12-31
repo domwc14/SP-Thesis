@@ -1,5 +1,4 @@
-    import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
-    import { useAuthContext } from "../hooks/useAuthContext"
+
     import Card from '@mui/material/Card';
 
     //components
@@ -49,7 +48,7 @@
                 <p ><strong> Payment Terms: </strong>{overdueSI.payment_terms}</p>
                 <p ><strong> Total Amount:</strong>{overdueSI.total_amount}</p>
 
-                <Button onClick={Download_PDF.bind(this, overdueSI)}> Download the PDF </Button>
+                <button style={{ marginTop: '5px' }} className="green_button" onClick={Download_PDF.bind(this, overdueSI)}> Download the PDF </button>
                 {/* Button click is like that so that it only ACTUALLY runs ONLY when its clicked, NOT after initial page rendering */}
                 {/* <span className="material-symbols-outlined" onClick={handleTick}>delete</span> */}
                 </Card>

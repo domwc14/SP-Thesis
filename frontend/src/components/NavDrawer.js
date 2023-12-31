@@ -11,6 +11,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 //icons
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -20,27 +21,46 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import HandshakeIcon from '@mui/icons-material/Handshake';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
-import { Link } from 'react-router-dom';
+import { Link,useLocation } from 'react-router-dom';
+
+
 
 const drawerWidth = 210;
 
 export default function PermanentDrawerLeft() {
+  const NavDrawerTheme = createTheme({
+    typography: {
+      fontFamily: 'Open Sans, sans-serif',
+      fontWeightBold: 700,
+      fontSize: 14,
+      color:'green'
+    },
 
-      const navList = [
-        { text: 'SIPOM', icon: <DescriptionIcon sx={{ color: 'green' }}/>, to:'/salesinvoice' },
-        { text: 'Inventory', icon: <InventoryIcon sx={{ color: 'green' }}/>, to:'/product' },
-        { text: 'Clients', icon: <HandshakeIcon sx={{ color: 'green' }}/>, to:'/clients' },
-        { text: 'Send email', icon: <MailIcon sx={{ color: 'green' }}/>, to:'/email' },
-        { text: 'Alerts', icon: <NotificationImportantIcon sx={{ color: 'green' }}/>,to:'/alerts' },
-        { text: 'Reports', icon: <AssessmentIcon sx={{ color: 'green' }}/>, to:'/reports' },
-        
-      ];
+  });
+
+  const location = useLocation();
+  const isCurrentPage = (path) => location.pathname === path;
+
+  const navList = [
+    { text: 'Sales Invoices', icon: <DescriptionIcon sx={{ color: 'green' }}/>, to:'/salesinvoice' },
+    { text: 'Inventory', icon: <InventoryIcon sx={{ color: 'green' }}/>, to:'/product' },
+    { text: 'Clients', icon: <HandshakeIcon sx={{ color: 'green' }}/>, to:'/clients' },
+    { text: 'Send email', icon: <MailIcon sx={{ color: 'green' }}/>, to:'/email' },
+    { text: 'Alerts', icon: <NotificationImportantIcon sx={{ color: 'green' }}/>,to:'/alerts' },
+    // { text: 'Reports', icon: <AssessmentIcon sx={{ color: 'green' }}/>, to:'/reports' },
+    
+  ];
+
+  const miscList = [
+    { text: 'User Control', icon: <ManageAccountsIcon sx={{ color: 'green' }}/>, to:'/usercontrol' },
+  ]
 
 
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex'  }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -54,22 +74,26 @@ export default function PermanentDrawerLeft() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            boxShadow: '4px 0px 8px rgba(0, 64, 0, 0.1)', // Add box shadow to the left edge
           },
         }}
         variant="permanent"
         anchor="left"
       >
-
+        <ThemeProvider theme={NavDrawerTheme}>
         <List>
-        <Divider />
+        {/* <Divider /> */}
           {navList.map((item) => (
-            <ListItem key={item.text} disablePadding component={Link} to={`${item.to}`}>
+            <ListItem style={{ textDecoration: 'none', color: 'black' }}  key={item.text} disablePadding component={Link} to={`${item.to}`}
+            sx={{ backgroundColor: isCurrentPage(item.to) ? 'rgba(0, 128, 0, 0.15)' : 'transparent' }}
+            >
               <ListItemButton>
                 <ListItemIcon> {item.icon}</ListItemIcon>
                           {/* <Link to="/">
                     <h1>EmailPage</h1>
                 </Link>  */}
-                <ListItemText primary={item.text} />
+                <ListItemText style={{ textDecoration: 'none', color:'var(--primary)' }} ><strong>{item.text}</strong> </ListItemText>
+                {/* <ListItemText primary={item.text}/> */}
               </ListItemButton>
             </ListItem>
           ))}
@@ -81,51 +105,27 @@ export default function PermanentDrawerLeft() {
 
         <Divider />
         <List>
-          {['filler', 'filler', 'Logout'].map((text, index) => (
-            <ListItem key={text} disablePadding>
+        {/* <Divider /> */}
+          {miscList.map((item) => (
+            <ListItem   key={item.text} disablePadding component={Link} to={`${item.to}`} 
+            sx={{ backgroundColor: isCurrentPage(item.to) ? 'rgba(0, 128, 0, 0.15)' : 'transparent' }}>
               <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemIcon > {item.icon}</ListItemIcon>
+                          {/* <Link to="/">
+                    <h1>EmailPage</h1>
+                </Link>  */}
+                <ListItemText style={{ textDecoration: 'none', color:'var(--primary)' }} ><strong>{item.text}</strong> </ListItemText>
+                {/* <ListItemText primary={item.text}  />   */}
               </ListItemButton>
             </ListItem>
           ))}
+                {/* color:'var(--primary)' */}
+          {/* <Link to="/email">
+                    <h1>EmailPage</h1>   this works but mapping does not
+                </Link>  */}
         </List>
+        </ThemeProvider>
       </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-      >
-        <Toolbar />
-        {/* <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-          sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography> */}
-      </Box>
     </Box>
   );
 }

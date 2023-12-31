@@ -161,7 +161,7 @@ const UpdateSalesInvoiceForm = () => {
             ...(purchase_list && { purchase_list }),
          };
 
-        const response = await fetch('/salesinvoice/'+invoice_number,{
+        const response = await fetch('/api/salesinvoice/'+invoice_number,{
             method:'PATCH',
             body: JSON.stringify(salesinvoice),
             headers:{
@@ -213,6 +213,7 @@ const UpdateSalesInvoiceForm = () => {
         <Box>
         <form id="UpdateSalesInvoiceForm" className="create" onSubmit={handleSubmit}>
         <h3> Update a Sales Invoice</h3>
+        <h5> *Update overwrites the Articles List of the invoice but does not revert stock deductions made the previous invoice.  </h5>
         <label> Invoice Number</label>
         <input 
             type="text" onChange={(e)=> setInvoice_number(e.target.value)}
@@ -341,7 +342,7 @@ const UpdateSalesInvoiceForm = () => {
             '&:hover': {
                 backgroundColor: 'var(--secondary)',
             },
-            }} onClick={handleAddToCart}> 11.11 Addutocartu </Button>
+            }} onClick={handleAddToCart}> Add to Articles List </Button>
         <Button sx={{
             background: 'var(--primary)',
             border: 0,

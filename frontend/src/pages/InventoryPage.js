@@ -32,11 +32,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import AddInventoryForm from "../components/AddInventoryForm";
 import UpdateInventoryForm from "../components/UpdateInventoryForm";
 import DeleteInventoryForm from "../components/DeleteInventoryForm";
-import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 
 
 //FRONTEND DESIGN PART
-
+ 
 const StyledButton = styled(Button)({
     variant:"contained",
     borderRadius: '20px', // You can adjust the value to control the roundness
@@ -194,8 +194,14 @@ const InventoryPage = () => {
     const [isUpdateFormVisible, setUpdateFormVisible] = useState(false);
     const [isDeleteFormVisible, setDeleteFormVisible] = useState(false);
     const {inventory_list,dispatch} = useInventoryContext()
+
     const [query,setQuery] = useState('')
+    const [searchField, setSearchField] = useState('product_code');
+
+
+
     const {user} = useAuthContext()
+
 
     console.log("b4 fetch JSON",inventory_list)
 
@@ -225,7 +231,7 @@ const InventoryPage = () => {
 
     useEffect(()=>{
         const fetchInventory = async () => {
-            const response = await fetch('/product',{
+            const response = await fetch('/api/product',{
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -269,8 +275,41 @@ const InventoryPage = () => {
     }
 
     const filtered_inventory_list = inventory_list.filter(item=>{
-        return item.product_code.toLowerCase().includes(query.toLowerCase())
-        //maybe if need. try item.$variablefieldfind
+
+        const fieldValues = item[searchField];  //this is all the values of the item. 
+        // console.log("FIELDVALUE", fieldValues)
+        // console.log("TYPEOFFIELDVALUE", typeof (fieldValues))
+
+        //if fieldValue is empty (nagclick ng radio button ng walang nakatype) do nothing. if may search na +
+        //&& typeof(fieldValues) === 'string'
+        
+        //because I think 0 is also null. not sure, basta line below is needed so that it also shows 0
+        if (fieldValues !== undefined && fieldValues !== null) {
+            if (typeof(fieldValues) === 'string') {
+                return fieldValues.toLowerCase().includes(query.toLowerCase());
+            } 
+            else if (typeof fieldValues === 'number') {
+                // if (query === '0'){
+                //     console.log("QUERY IS ZERO")
+                //     console.log("FIELDVALUE", fieldValues)
+                //     return fieldValues === 0.
+                // }
+                return fieldValues === Number(query);  // Convert query to number for comparison
+            }
+
+            // convert values of product.stock to string first because includes is a string 
+            
+            // const stringValue = fieldValues.toString();
+            // console.log("STRVALUE IS 0",stringValue)
+            // return stringValue.includes(query);
+
+        }
+        else {
+            return false
+        }
+
+        //if not searchField:
+        //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
 
      const rows = filtered_inventory_list
@@ -294,13 +333,16 @@ const InventoryPage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div >
-        <Stack direction="row" spacing={2} marginBottom={2}>
-            <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
+        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+            <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
+            {/* <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
             <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
-            <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton>
-            {/* YOU ARE HERE  */}
-            <Box sx={{ width: '10%', ml: { xs: 0, md: 1 } }}>
-                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
+            <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton> */}
+
+            <Box sx={{ width: '90%', ml: { xs: 0, md: 1 } }}>
+                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ marginRight:2, width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
                     id="header-search"
@@ -315,6 +357,26 @@ const InventoryPage = () => {
                     placeholder="Search Product Code"
                     />
                 </FormControl>
+
+                <FormControl component="setsearchfield">
+                    <RadioGroup
+                        row
+                        aria-label="searchCriteria"
+                        name="searchCriteria"
+                        value={searchField}
+                        onChange={(e) => setSearchField(e.target.value)}
+                    >
+                        <FormControlLabel value="product_code" control={<Radio size="small"  />} label="Product Code" />
+                        <FormControlLabel value="stock" control={<Radio size="small" />} label="Stock" />
+                        <FormControlLabel value="type" control={<Radio size="small" />} label="Type" />
+                        <FormControlLabel value="size" control={<Radio size="small" />} label="Size" />
+                        <FormControlLabel value="color" control={<Radio size="small" />} label="Color" />
+                        <FormControlLabel value="acquisition_price" control={<Radio size="small" />} label="Acquisition Price" />
+                        <FormControlLabel value="unit_price" control={<Radio size="small" />} label="Unit Price" />
+                        
+                        {/* <FormControlLabel value="unit" control={<Radio />} label="Unit" /> */}
+                    </RadioGroup>
+                    </FormControl>
             </Box>
 
 

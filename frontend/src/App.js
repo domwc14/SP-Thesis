@@ -1,15 +1,16 @@
 import { BrowserRouter,Routes,Route,Navigate } from "react-router-dom";
 import { useAuthContext } from "./hooks/useAuthContext";
 //pages and components
-import Home from './pages/Home'
+// import Home from './pages/Home'
 import Login from './pages/Login'
-import Signup from "./pages/Signup";
+// import Signup from "./pages/Signup";
 import Navbar from './components/Navbar'
 import EmailPage from './pages/EmailPage'
 import InventoryPage from './pages/InventoryPage'
 import SalesInvoicePage from "./pages/SalesInvoicePage";
 import ClientPage from "./pages/ClientPage"
 import AlertPage from "./pages/AlertPage"
+import UserControlPage from "./pages/UserControlPage"
 
 
 
@@ -30,16 +31,22 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar />
-        <div className="pages">
+        <div className="pages" style={{overflowX: 'auto',background: 'linear-gradient(to right, rgba(245, 245, 0, 0.2), rgba(0, 0, 0, 0.15), rgba(0, 200, 0, 0.15))'}}>
           <Routes>
-            <Route path="/" element={user ? <Home /> : <Navigate to="/login"/>} /> 
+            <Route path="/" element={user ? <Navigate to="/alerts"/> : <Navigate to="/login"/>} /> 
             <Route path="/email" element={user ? <EmailPage /> :<Navigate to="/login"/>} />
             <Route path="/product" element={user ? <InventoryPage />: <Navigate to="/login"/>} />
             <Route path="/salesinvoice" element={user ? <SalesInvoicePage />: <Navigate to="/login"/>} />
-            <Route path="/clients" element={<ClientPage />} />
-            <Route path="/alerts" element={<AlertPage />} />
+            <Route path="/clients" element={user ? <ClientPage />: <Navigate to="/login"/>} />
+            <Route path="/alerts" element={user ? <AlertPage />: <Navigate to="/login"/>} />
+            {/* <Route path="/reports" element={user ? <SalesInvoicePage />: <Navigate to="/login"/>} />  IN PROGRESS*/}
+            <Route path="/usercontrol" element={user ? <UserControlPage />: <Navigate to="/login"/>} />
             <Route path="/login" element={!user ? <Login />: <Navigate to="/"/>} />
-            <Route path="/signup" element={!user ? <Signup />: <Navigate to="/"/>} />
+
+            {/* catch all default. redirects to the AlertPage (our current home page) */}
+            <Route path="*" element={!user ? <Login />: <Navigate to="/"/>} />  
+
+            {/* <Route path="/signup" element={user ? <Signup />: <Navigate to="/login"/>} /> */}
     
 
 

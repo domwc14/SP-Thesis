@@ -1,5 +1,7 @@
 /* google font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+
 
 /* layout */
 :root {
@@ -7,6 +9,8 @@
   --error: #e7195a;
   --secondary: rgb(25, 143, 117);
   --tertiary: rgb(13, 102, 77);
+  --darkergreen1: #155e49;
+  --gptgreen: #10a37f;
 }
 body {
   background: #f1f1f1;
@@ -29,7 +33,12 @@ header a {
   text-decoration: none;
 }
 .pages{
-  max-width: 1400px;
+  /* TO CONSIDER */
+  /* max-width: 1400px; */
+  max-width: auto;
+  /* min-width: auto; */
+  /* max-width: 1600px; */
+  min-height: 640px;
   margin: 0 auto;
 }
 
@@ -57,6 +66,12 @@ header a {
   color: #555;
 }
 
+.colored_title {
+  margin: 0 0 10px 0;
+  font-size: 1.25em;
+  color: var(--primary);
+}
+
 /* new workout form */
 label, input {
   display: block;
@@ -78,6 +93,28 @@ form button {
   font-family: "Poppins";
   border-radius: 4px;
   cursor: pointer;
+}
+
+.green_button {
+  background: var(--primary);
+  border: 0;
+  color: #fff;
+  padding: 10px;
+  font-family: "Poppins";
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.green_button_round {
+  background: var(--gptgreen);
+  border: 0;
+  color: #ffffff;
+  padding: 10px;
+  font-family: "Poppins";
+  border-radius: 16px;
+  cursor: pointer;
+  min-width: 100px ;
+  max-width: 150px ;
 }
 
 div.error {
@@ -121,4 +158,27 @@ form.signup, form.login {
   padding: 20px;
   background: #fff;
   border-radius: 4px;
+}
+
+form.createuser {
+  max-width: 400px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  border: 2px solid #1aac83;
+  margin-top: 25px;
+}
+
+
+.white_button {
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: "Poppins";
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 10px;
 }

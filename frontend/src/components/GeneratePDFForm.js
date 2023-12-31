@@ -30,7 +30,7 @@ const GeneratePDFForm = () => {
             return
         }
 
-         const response = await fetch('/salesinvoice/'+invoice_number,{
+         const response = await fetch('/api/salesinvoice/'+invoice_number,{
 
             headers:{
                 'Authorization': `Bearer ${user.token}`

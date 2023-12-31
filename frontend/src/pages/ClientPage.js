@@ -38,7 +38,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import AddClientForm from "../components/AddClientForm";
 import UpdateClientForm from "../components/UpdateClientForm";
 import DeleteClientForm from "../components/DeleteClientForm";
-import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 
 
 //FRONTEND DESIGN PART
@@ -200,7 +200,11 @@ const ClientPage = () => {
     const [isUpdateFormVisible, setUpdateFormVisible] = useState(false);
     const [isDeleteFormVisible, setDeleteFormVisible] = useState(false);
     const {clients_list,dispatch} = useClientsContext()
+
+
     const [query,setQuery] = useState('')
+    const [searchField, setSearchField] = useState('name');
+
     const {user} = useAuthContext()
 
     console.log("b4 fetch JSON",clients_list)
@@ -274,10 +278,54 @@ const ClientPage = () => {
         return <div>Loading...</div>;
     }
 
+    // const filtered_clients_list = clients_list.filter(client=>{
+    //     return client.name.toLowerCase().includes(query.toLowerCase())
+    //     //maybe if need. try item.$variablefieldfind
+    // })
+    //DELETE AFTER
+
     const filtered_clients_list = clients_list.filter(client=>{
-        return client.name.toLowerCase().includes(query.toLowerCase())
-        //maybe if need. try item.$variablefieldfind
+
+        const fieldValues = client[searchField];  //this is all the values of the item. 
+        // console.log("FIELDVALUE", fieldValues)
+        // console.log("TYPEOFFIELDVALUE", typeof (fieldValues))
+
+        //if fieldValue is empty (nagclick ng radio button ng walang nakatype) do nothing. if may search na +
+        //&& typeof(fieldValues) === 'string'
+        
+        //because I think 0 is also null. not sure, basta line below is needed so that it also shows 0
+        if (fieldValues !== undefined && fieldValues !== null) {
+            if (typeof(fieldValues) === 'string') {
+                return fieldValues.toLowerCase().includes(query.toLowerCase());
+            } 
+            else if (typeof fieldValues === 'number') {
+                // if (query === '0'){
+                //     console.log("QUERY IS ZERO")
+                //     console.log("FIELDVALUE", fieldValues)
+                //     return fieldValues === 0.
+                // }
+                return fieldValues === Number(query);  // Convert query to number for comparison
+            }
+
+            // convert values of product.stock to string first because includes is a string 
+            
+            // const stringValue = fieldValues.toString();
+            // console.log("STRVALUE IS 0",stringValue)
+            // return stringValue.includes(query);
+
+        }
+        else {
+            return false
+        }
+
+        //if not searchField:
+        //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
+
+
+
+
+
 
      const rows = filtered_clients_list
     //const rows = clients_list
@@ -300,12 +348,15 @@ const ClientPage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div >
-        <Stack direction="row" spacing={2} marginBottom={2}>
-            <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
-            <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
-            <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton>
+        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+            <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
+            {/* <StyledButton onClick={handleOpenAddForm}> Add </StyledButton> */}
+            {/* <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
+            <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton> */}
             {/* YOU ARE HERE  */}
-            <Box sx={{ width: '10%', ml: { xs: 0, md: 1 } }}>
+            <Box sx={{ width: '40%', ml: { xs: 0, md: 1 } }}>
                 <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
@@ -321,6 +372,25 @@ const ClientPage = () => {
                     placeholder="Search Client"
                     />
                 </FormControl>
+
+                
+                <FormControl component="setsearchfield">
+                    <RadioGroup
+                        row
+                        aria-label="searchCriteria"
+                        name="searchCriteria"
+                        value={searchField}
+                        onChange={(e) => setSearchField(e.target.value)}
+                    >
+                        <FormControlLabel value="name" control={<Radio size="small"  />} label="Name" />
+                        <FormControlLabel value="customer_type" control={<Radio size="small" />} label="Type" />
+                        <FormControlLabel value="location" control={<Radio size="small" />} label="Location" />
+                        <FormControlLabel value="market" control={<Radio size="small" />} label="Market" />
+                        
+                        {/* <FormControlLabel value="unit" control={<Radio />} label="Unit" /> */}
+                    </RadioGroup>
+                    </FormControl>
+
             </Box>
 
 

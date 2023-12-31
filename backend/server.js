@@ -1,6 +1,7 @@
 const dotenv = require("dotenv").config();
 const express = require('express');
 const mongoose = require('mongoose')
+const multer = require('multer');
 
 const workoutRoutes = require('./routes/workouts')
 
@@ -9,6 +10,7 @@ const customerRoutes = require('./routes/customer')
 const productRoutes = require('./routes/product')
 const deliveryRoutes = require('./routes/delivery')
 const emailRoutes = require('./routes/email')
+const alertsRoutes = require('./routes/alerts')
 
 const userRoutes = require('./routes/user')
 
@@ -21,7 +23,6 @@ app.use(express.static(path.join(__dirname+"/public")))
 //middleware
 app.use(express.json())
 
-
 app.use((req,res,next) => {
     console.log(req.path, req.method)
     next()
@@ -31,15 +32,27 @@ app.use((req,res,next) => {
 app.use('/api/workouts',workoutRoutes)
 app.use('/api/user',userRoutes)
 
-app.use('/customers',customerRoutes)
-app.use('/product',productRoutes)
-app.use('/delivery',deliveryRoutes)
-app.use('/salesinvoice',salesInvoiceRoutes)
-app.use('/email',emailRoutes)
+app.use('/api/alerts',alertsRoutes)
+app.use('/customers',customerRoutes)    //no need /api , it's different sa client routing its /clients
+app.use('/api/product',productRoutes)
+app.use('/api/delivery',deliveryRoutes)
+app.use('/api/salesinvoice',salesInvoiceRoutes)
+app.use('/api/email',emailRoutes)
 
-app.get('/',(req,res)=>{
-    res.json({msg: 'Welcome to app'})
-});
+app.get("/*", function (req, res) { //kind of but frontend redirects to login or homepage paren e 
+    res.sendFile(path.join(__dirname+"/public/index.html"), function (err) {
+      if (err) {
+        res.status(500).send(err);
+      }
+    });
+  });
+//THIS IS THE ADDED 
+
+
+
+// app.get('/',(req,res)=>{
+//     res.json({msg: 'Welcome to app'})
+// });
 
 mongoose.connect(process.env.dbURI)
     .then(()=>{

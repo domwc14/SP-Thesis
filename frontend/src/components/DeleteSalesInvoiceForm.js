@@ -21,7 +21,7 @@ const DeleteSalesInvoiceForm = () => {
             return
          }
 
-         const response = await fetch('/salesinvoice/'+invoice_number,{
+         const response = await fetch('/api/salesinvoice/'+invoice_number,{
             method:'DELETE',
             headers:{
                 'Authorization': `Bearer ${user.token}`

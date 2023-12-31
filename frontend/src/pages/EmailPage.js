@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack';
 
 //components
 import OverdueSalesInvoiceDetails from "../components/OverdueSalesInvoiceDetails";
+import SendEmailForm from "../components/SendEmailForm";
 import NavDrawer from "../components/NavDrawer";
 import { Button } from "@mui/material";
 
@@ -33,7 +34,7 @@ const EmailPage = () => {
 
     useEffect( () => {
         const fetchOverdueSI = async () => {
-            const response = await fetch(`/email?page=${state.overdueSI.currentPage}`,{
+            const response = await fetch(`/api/email?page=${state.overdueSI.currentPage}`,{
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -80,23 +81,11 @@ const EmailPage = () => {
 
 
         <div>
-            <Grid container spacing={2}>
-                <Grid item xs={8}>
-                    <Item>xs=8</Item>
-                </Grid>
-                <Grid item xs={4}>
-                    <Item>xs=4</Item>
-                </Grid>
-                <Grid item xs={4}>
-                    <Item>xs=4</Item>
-                </Grid>
-                <Grid item xs={8}>
-                    <Item>xs=8</Item>
-                </Grid>
-            </Grid>
+            <SendEmailForm/>
+
         </div>
         <div>
-            <h2>OVERDUE SALES INVOICES HERE</h2>
+            <h2 className="colored_title">Overdue Sales Invoices </h2>
             {state && state.overdueSI && state.overdueSI.salesinvoices && state.overdueSI.salesinvoices.map((salesinvoice)=>(
             <OverdueSalesInvoiceDetails key={salesinvoice._id} overdueSI={salesinvoice}/>
             ))}

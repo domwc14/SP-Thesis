@@ -32,7 +32,7 @@ const AddInventoryForm = () => {
          const product = {product_code,stock,type,size,color,description,acquisition_price,
             unit_price,unit,stocktrigger_at} //catches yung mga values sa form
 
-         const response = await fetch('/product/addproduct',{
+         const response = await fetch('/api/product/addproduct',{
             method:'POST',
             body: JSON.stringify(product),
             headers:{

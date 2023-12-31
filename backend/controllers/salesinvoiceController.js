@@ -1,5 +1,4 @@
-//CHANGE createSalesInvoice to match schema na dinagdagan ng Customer field reference
-//CHANGE createSalesInvoice to match schema na dinagdagan ng amount sa purchase list        //BOTH DONE, AT TRYING IF WORKS
+
 const SalesInvoice = require('../models/salesInvoiceModel')
 const Product = require('../models/productModel')
 const mongoose = require('mongoose')

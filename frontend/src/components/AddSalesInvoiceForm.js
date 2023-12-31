@@ -169,7 +169,7 @@ const AddSalesInvoiceForm = () => {
             const salesinvoice = {invoice_number,reference_PO,customer:customerjson._id,date,description,payment_terms,payment_due,
                 date_paid,amount_paid,BIR_2307,SR,CR_Number,purchase_list} //catches yung mga values sa form
     
-            const response = await fetch('/salesinvoice/add',{
+            const response = await fetch('/api/salesinvoice/add',{
                 method:'POST',
                 body: JSON.stringify(salesinvoice),
                 headers:{
@@ -324,7 +324,7 @@ const AddSalesInvoiceForm = () => {
           </TableRow>
         </TableHead>
             <TableBody>
-            {(purchase_list
+            {/* {(purchase_list
             ).map((row) => (
                 <StyledTableRow key={row.product_code}>
                 <TableCell style={{ width: 60 }} component="th" scope="row">
@@ -337,7 +337,32 @@ const AddSalesInvoiceForm = () => {
                     {row.amount}
                 </TableCell>
                 </StyledTableRow>
-            ))}
+            ))} */}
+
+            {purchase_list && purchase_list.length > 0 ? (
+                purchase_list.map((row) => (
+                <StyledTableRow key={row.product_code}>
+                <TableCell style={{ width: 60 }} component="th" scope="row">
+                {row.product_code}
+                </TableCell>
+                <TableCell style={{ width: 80 }} align="right">
+                {row.quantity}
+                </TableCell>
+                <TableCell style={{ width: 80 }} align="right">
+                {row.amount}
+                </TableCell>
+                </StyledTableRow>
+                ))) :
+                (
+                <TableRow>
+                <TableCell colSpan={3} align="center">
+                    No Articles yet
+                </TableCell>
+                </TableRow>
+                )
+            }
+            
+
             <StyledTableRow>
             <TableCell colSpan={2}></TableCell> {/* Empty cells for Product Code and Quantity */}
             <TableCell style={{ width: 80 }} align="right">
@@ -405,7 +430,7 @@ const AddSalesInvoiceForm = () => {
             '&:hover': {
                 backgroundColor: 'var(--secondary)',
             },
-            }} onClick={handleAddToCart}> 11.11 Addutocartu </Button>
+            }} onClick={handleAddToCart}> Add to Articles List </Button>
         <Button sx={{
             background: 'var(--primary)',
             border: 0,

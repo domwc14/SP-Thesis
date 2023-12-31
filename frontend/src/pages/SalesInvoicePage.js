@@ -32,7 +32,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import AddSalesInvoiceForm from "../components/AddSalesInvoiceForm";
 import UpdateSalesInvoiceForm from "../components/UpdateSalesInvoiceForm";
 import DeleteSalesInvoiceForm from "../components/DeleteSalesInvoiceForm";
-import {FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 import GeneratePDFForm from "../components/GeneratePDFForm";
 
 
@@ -41,9 +41,10 @@ import GeneratePDFForm from "../components/GeneratePDFForm";
 const StyledButton = styled(Button)({
     variant:"contained",
     borderRadius: '20px', // You can adjust the value to control the roundness
-    padding: '10px 20px', // Adjust padding as needed
+    padding: '10px 20px ', // Adjust padding as needed
     color: 'black',
-    backgroundColor: 'grey'
+    backgroundColor: 'grey',
+    whiteSpace: 'nowrap', // Prevent text from going down. basically 1 liner
   });
 
 
@@ -205,6 +206,23 @@ const GenerateFormDialog = ({ open, onClose }) => {
     );
 };  
 
+function getFieldValues(obj, path) {        //for traversing customer.name may dot.
+    // Split the path into individual keys
+    const keys = path.split('.');
+    
+    // Traverse the object using the keys
+    let value = obj;
+    for (const key of keys) {
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key];
+      } else {
+        return undefined; // Property not found
+      }
+    }
+  
+    return value;
+  }
+
 
 
 //START OF EXPORTED FUNCTION / RETURN 
@@ -216,7 +234,11 @@ const SalesInvoicePage = () => {
     const [isGenerateFormVisible, setGenerateFormVisible] = useState(false);
 
     const {sales_invoice_list,dispatch} = useSalesInvoiceContext()
+
     const [query,setQuery] = useState('')
+    const [searchField, setSearchField] = useState('invoice_number');
+
+
     const {user} = useAuthContext()
 
     console.log("b4 fetch JSON",sales_invoice_list)
@@ -252,7 +274,7 @@ const SalesInvoicePage = () => {
 
     useEffect(()=>{
         const fetchSalesInvoice = async () => {
-            const response = await fetch('/salesinvoice',{
+            const response = await fetch('/api/salesinvoice',{
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -294,10 +316,55 @@ const SalesInvoicePage = () => {
         return <div>Loading...</div>;
     }
 
-    const filtered_sales_invoice = sales_invoice_list.filter(item=>{
-        return item.invoice_number.toLowerCase().includes(query.toLowerCase())
-        //maybe if need. try item.$variablefieldfind
+    const filtered_sales_invoice = sales_invoice_list.filter(invoice=>{
+        const fieldValues = getFieldValues(invoice, searchField);
+        console.log("FIELDVALS",fieldValues)
+        // console.log("FIELDVALUE", fieldValues)
+        // console.log("TYPEOFFIELDVALUE", typeof (fieldValues))
+
+        //if fieldValue is empty (nagclick ng radio button ng walang nakatype) do nothing. if may search na +
+        //&& typeof(fieldValues) === 'string'
+        
+        //because I think 0 is also null. not sure, basta line below is needed so that it also shows 0
+        if (fieldValues !== undefined && fieldValues !== null) {
+            if (Array.isArray(fieldValues)) {           //if field is purchase_list
+                return fieldValues.some(item =>
+                    item.product_code.toLowerCase().includes(query.toLowerCase())
+                  );
+
+            }
+            else if (typeof(fieldValues) === 'string') {
+                console.log("STRINGSTRINGSTRINGSTRING")
+                return fieldValues.toLowerCase().includes(query.toLowerCase());
+            } 
+            else if (typeof(fieldValues) === 'Date'){
+                console.log("DATE,DATEDATE")
+            }
+            
+            else if (typeof fieldValues === 'number') {
+                // if (query === '0'){
+                //     console.log("QUERY IS ZERO")
+                //     console.log("FIELDVALUE", fieldValues)
+                //     return fieldValues === 0.
+                // }
+                return fieldValues === Number(query);  // Convert query to number for comparison
+            }
+
+            // convert values of product.stock to string first because includes is a string 
+            
+            // const stringValue = fieldValues.toString();
+            // console.log("STRVALUE IS 0",stringValue)
+            // return stringValue.includes(query);
+
+        }
+        else {
+            return false
+        }
+
+        //if not searchField:
+        //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
+
 
      const rows = filtered_sales_invoice
     //const rows = sales_invoice
@@ -321,12 +388,18 @@ const SalesInvoicePage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div>
-        <Stack direction="row" spacing={2} marginBottom={2}>
-            <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
+        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+            <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
+            <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
+            <button style={{padding: '5px 30px '}} className="green_button_round" onClick={handleOpenGenerateForm}> GET DOCUMENTS </button>
+            {/* <StyledButton onClick={handleOpenAddForm}> Add </StyledButton>
             <StyledButton onClick={handleOpenUpdateForm}> Update </StyledButton>
             <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton>
-            <StyledButton onClick={handleOpenGenerateForm}> Generate Documents</StyledButton>
-            <Box sx={{ width: '10%', ml: { xs: 0, md: 1 } }}>
+            <StyledButton sx={{ padding: '10px 30px ' }} onClick={handleOpenGenerateForm}> Generate Documents</StyledButton> */}
+            {/* has own padding ksi haba ng text. overwrites padding ng Styled Button */}
+
+            <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
                 <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
@@ -342,6 +415,32 @@ const SalesInvoicePage = () => {
                     placeholder="Search Product Code"
                     />
                 </FormControl>
+
+                <FormControl component="setsearchfield">
+                    <RadioGroup
+                        row
+                        aria-label="searchCriteria"
+                        name="searchCriteria"
+                        value={searchField}
+                        onChange={(e) => setSearchField(e.target.value)}
+                    >
+                        <FormControlLabel value="invoice_number" control={<Radio size="small"  />} label="Invoice Number" />
+                        <FormControlLabel value="reference_PO" control={<Radio size="small" />} label="Reference PO" />
+                        <FormControlLabel value="customer.name" control={<Radio size="small" />} label="Customer Name" />
+                        <FormControlLabel value="date" control={<Radio size="small" />} label="Date" />
+                        <FormControlLabel value="total_amount" control={<Radio size="small" />} label="Total Amount" />
+                        <FormControlLabel value="payment_terms" control={<Radio size="small" />} label="Payment Terms" />
+                        <FormControlLabel value="payment_due" control={<Radio size="small" />} label="Payment Due" />
+                        <FormControlLabel value="date_paid" control={<Radio size="small" />} label="Date Paid" />
+                        <FormControlLabel value="BIR_2307" control={<Radio size="small" />} label="BIR 2307" />
+                        <FormControlLabel value="SR" control={<Radio size="small" />} label="Sales Rep." />
+                        <FormControlLabel value="CR_Number" control={<Radio size="small" />} label="CR Number" />
+                        <FormControlLabel value="purchase_list" control={<Radio size="small" />} label="Product Code" />
+                        
+                        {/* <FormControlLabel value="unit" control={<Radio />} label="Unit" /> */}
+                    </RadioGroup>
+                    </FormControl>
+
             </Box>
             <AddFormDialog open={isAddFormVisible} onClose={handleCloseForms} />
             <UpdateFormDialog open={isUpdateFormVisible} onClose={handleCloseForms} />
@@ -352,23 +451,23 @@ const SalesInvoicePage = () => {
 
 
         <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <Table sx={{ minWidth: 500, maxWidth: 1600 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
             <StyledTableCell>Invoice Number</StyledTableCell>
-            <StyledTableCell align="right">Reference_PO</StyledTableCell>
-            <StyledTableCell align="right">Customer</StyledTableCell>
-            <StyledTableCell align="right">Date</StyledTableCell>
-            <StyledTableCell align="right">Description</StyledTableCell>
-            <StyledTableCell align="right">Total Amount</StyledTableCell>
-            <StyledTableCell align="right">Payment Terms</StyledTableCell>
-            <StyledTableCell align="right">Payment Due</StyledTableCell>
-            <StyledTableCell align="right">Date Paid</StyledTableCell>
-            <StyledTableCell align="right">Amount Paid</StyledTableCell>
-            <StyledTableCell align="right">BIR 2307</StyledTableCell>
-            <StyledTableCell align="right">SR</StyledTableCell>
-            <StyledTableCell align="right">CR Number</StyledTableCell>
-            <StyledTableCell align="right">Purchase List</StyledTableCell>
+            <StyledTableCell align="center">Reference_PO</StyledTableCell>
+            <StyledTableCell align="center">Customer</StyledTableCell>
+            <StyledTableCell align="center">Date</StyledTableCell>
+            <StyledTableCell align="center">Description</StyledTableCell>
+            <StyledTableCell align="center">Total Amount</StyledTableCell>
+            <StyledTableCell align="center">Payment Terms</StyledTableCell>
+            <StyledTableCell align="center">Payment Due</StyledTableCell>
+            <StyledTableCell align="center">Date Paid</StyledTableCell>
+            <StyledTableCell align="center">Amount Paid</StyledTableCell>
+            <StyledTableCell align="center">BIR 2307</StyledTableCell>
+            <StyledTableCell align="center">SR</StyledTableCell>
+            <StyledTableCell align="center">CR Number</StyledTableCell>
+            <StyledTableCell align="center">Purchase List</StyledTableCell>
           </TableRow>
         </TableHead>
             <TableBody>
@@ -377,58 +476,61 @@ const SalesInvoicePage = () => {
                 : rows
             ).map((row) => (
                 <StyledTableRow key={row.invoice_number}>
-                <TableCell style={{ width: 120 }} component="th" scope="row">
+                <TableCell style={{ minWidth: 90 }} component="th" scope="row">
                     {row.invoice_number}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 115 }} align="center">
                     {row.reference_PO}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.customer.name}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 100}} align="center">
                     {(() => {
                     const dateObject = new Date(row.date);
-                    const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+                    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const formattedDate = dateObject.toLocaleDateString('en-US', options).replace(/\//g, '-');
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.description}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.total_amount}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.payment_terms}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 100}} align="center">
                     {(() => {
                     const dateObject = new Date(row.payment_due);
-                    const formattedDate = new Intl.DateTimeFormat('en-US').format(dateObject);
+                    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const formattedDate = dateObject.toLocaleDateString('en-US', options).replace(/\//g, '-');
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 100}} align="center">
                     {(() => {
                     const dateObject = row.date_paid ? new Date(row.date_paid) : null;
-                    const formattedDate = dateObject ? new Intl.DateTimeFormat('en-US').format(dateObject) : '';
+                    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const formattedDate = dateObject ?  dateObject.toLocaleDateString('en-US', options).replace(/\//g, '-'): '';
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.amount_paid}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.BIR_2307}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 90 }} align="center">
                     {row.SR}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 115 }} align="center">
                     {row.CR_Number}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ minWidth: 100 }} align="center">
                     <h4>Purchase List Here*</h4>
                 </TableCell>
                 </StyledTableRow>

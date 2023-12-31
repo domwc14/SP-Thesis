@@ -32,12 +32,20 @@ userSchema.statics.signup = async function(email,password){
     // if(!validator.isStrongPassword(password)){
     //     throw Error('Password is weak bruh')
     // }
+
     if (email.length < 8) {
-        throw Error('Username is too short bruh')
+        throw Error('Username is too short')
       }
       if (password.length < 8) {
-        throw Error('Password is too short bruh')
+        throw Error('Password is too short')
       }
+    
+    if(validator.isAlpha(email)){
+        throw Error('Username needs atleast 1 number or a symbol')
+    }
+    if(validator.isAlpha(password)){
+        throw Error('Password needs atleast 1 number or a symbol')
+    }
       
 
 
