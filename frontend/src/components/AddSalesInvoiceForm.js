@@ -6,8 +6,7 @@ import { Button } from "@mui/material";
 
 //Table
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
+
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
@@ -15,15 +14,10 @@ import TableCell from '@mui/material/TableCell';
 import { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
+
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import Stack from '@mui/material/Stack';
+
 
     //STYLES OF TABLE HEADER AND TABLE ROW
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -247,14 +241,14 @@ const AddSalesInvoiceForm = () => {
         />
         
         {/* TRY TRY TRY TO DO //try get current date  */} 
-        <label> Date MM/DD/YYYY </label>
+        <label> Date </label>
         <input 
             type="date" onChange={(e)=> setDate(e.target.value)}
             value={date}
           
            className={emptyFields.includes('date') ? 'error': ''}
         />
-         <label>Description</label>
+         <label>Description*</label>
         <input 
             type="text" onChange={(e)=> setDescription(e.target.value)}
             value={description}
@@ -264,7 +258,7 @@ const AddSalesInvoiceForm = () => {
 
         {/* //TOTAL AMOUNT WOULD HAVE BEEN HERE */}
 
-        <label>Payment Terms</label>
+        <label>Payment Terms*</label>
         <input 
             type="text" onChange={(e)=> setPayment_terms(e.target.value)}
             value={payment_terms}
@@ -277,7 +271,7 @@ const AddSalesInvoiceForm = () => {
             value={payment_due}
            className={emptyFields.includes('payment_due') ? 'error': ''}
         />
-        <label>Date Paid</label>
+        <label>Date Paid*</label>
         <input 
             type="date" onChange={(e)=> setDate_paid(e.target.value)}
             value={date_paid}
@@ -324,21 +318,6 @@ const AddSalesInvoiceForm = () => {
           </TableRow>
         </TableHead>
             <TableBody>
-            {/* {(purchase_list
-            ).map((row) => (
-                <StyledTableRow key={row.product_code}>
-                <TableCell style={{ width: 60 }} component="th" scope="row">
-                    {row.product_code}
-                </TableCell>
-                <TableCell style={{ width: 80 }} align="right">
-                    {row.quantity}
-                </TableCell>
-                <TableCell style={{ width: 80 }} align="right">
-                    {row.amount}
-                </TableCell>
-                </StyledTableRow>
-            ))} */}
-
             {purchase_list && purchase_list.length > 0 ? (
                 purchase_list.map((row) => (
                 <StyledTableRow key={row.product_code}>

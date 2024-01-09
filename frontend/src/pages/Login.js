@@ -12,9 +12,12 @@ const Login = () => {
     }
 
     return (
+        <div >
+        <h1 className='colored_title_big' style={{ textAlign: 'center', marginTop: '20px' }} > PerSafS Inventory Invoice System </h1>
+        <h1 className='colored_title' style={{ textAlign: 'center' }} >IINVIS </h1>
         <form className="login" onSubmit={handleSubmit}>
             <h3> Login</h3>
-            <label> Email: </label>
+            <label> Username: </label>
             <input 
             type="text"
             onChange={(e)=> setEmail(e.target.value)}
@@ -31,6 +34,7 @@ const Login = () => {
             <button disabled={isLoading}> Login </button>  
             {error && <div className="error">{error}</div>}
         </form>
+        </div>
     )
 }
 

@@ -111,7 +111,7 @@ const AddInventoryForm = () => {
           
            className={emptyFields.includes('color') ? 'error': ''}
         />
-        <label>Description</label>
+        <label>Description*</label>
         <input 
             type="text" onChange={(e)=> setDescription(e.target.value)}
             value={description}
@@ -131,13 +131,13 @@ const AddInventoryForm = () => {
 
            className={emptyFields.includes('unit_price') ? 'error': ''}
         />
-        <label>Unit</label>
+        <label>Unit*</label>
         <input 
             type="text" onChange={(e)=> setUnit(e.target.value)}
             value={unit}
            //className={emptyFields.includes('unit') ? 'error': ''}
         />
-        <label>Alert me when the stock dips at or below: *optional</label>
+        <label>Alert me when the stock dips at or below* </label>
         <input 
             type="text" onChange={(e)=> setStocktrigger_at(e.target.value)}
             value={stocktrigger_at}

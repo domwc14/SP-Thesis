@@ -3,9 +3,8 @@ import { useOverdueSIContext } from "../hooks/useOverdueSIContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
+
+
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
@@ -13,17 +12,17 @@ import Stack from '@mui/material/Stack';
 import OverdueSalesInvoiceDetails from "../components/OverdueSalesInvoiceDetails";
 import SendEmailForm from "../components/SendEmailForm";
 import NavDrawer from "../components/NavDrawer";
-import { Button } from "@mui/material";
+
 
 //temporary
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+//     ...theme.typography.body2,
+//     padding: theme.spacing(1),
+//     textAlign: 'center',
+//     color: theme.palette.text.secondary,
+// }));
 
 const EmailPage = () => {
     const {state,dispatch} = useOverdueSIContext()

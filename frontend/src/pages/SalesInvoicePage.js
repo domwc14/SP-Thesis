@@ -34,18 +34,21 @@ import UpdateSalesInvoiceForm from "../components/UpdateSalesInvoiceForm";
 import DeleteSalesInvoiceForm from "../components/DeleteSalesInvoiceForm";
 import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 import GeneratePDFForm from "../components/GeneratePDFForm";
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 
 
 //FRONTEND DESIGN PART
 
-const StyledButton = styled(Button)({
-    variant:"contained",
-    borderRadius: '20px', // You can adjust the value to control the roundness
-    padding: '10px 20px ', // Adjust padding as needed
-    color: 'black',
-    backgroundColor: 'grey',
-    whiteSpace: 'nowrap', // Prevent text from going down. basically 1 liner
-  });
+// const StyledButton = styled(Button)({
+//     variant:"contained",
+//     borderRadius: '20px', // You can adjust the value to control the roundness
+//     padding: '10px 20px ', // Adjust padding as needed
+//     color: 'black',
+//     backgroundColor: 'grey',
+//     whiteSpace: 'nowrap', // Prevent text from going down. basically 1 liner
+//   });
 
 
 
@@ -235,6 +238,11 @@ const SalesInvoicePage = () => {
 
     const {sales_invoice_list,dispatch} = useSalesInvoiceContext()
 
+    //sorting
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('invoice_number'); // Default sorting column
+
+    //search
     const [query,setQuery] = useState('')
     const [searchField, setSearchField] = useState('invoice_number');
 
@@ -270,6 +278,17 @@ const SalesInvoicePage = () => {
         setDeleteFormVisible(false);
         setGenerateFormVisible(false);
     };
+
+    const handleSort = (column) => {
+        if (sortColumn === column) {
+          // Toggle sort order if the same column is clicked again
+          setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+        } else {
+          // Set the new sorting column and default to ascending order
+          setSortColumn(column);
+          setSortOrder('asc');
+        }
+      };
 
 
     useEffect(()=>{
@@ -334,10 +353,10 @@ const SalesInvoicePage = () => {
 
             }
             else if (typeof(fieldValues) === 'string') {
-                console.log("STRINGSTRINGSTRINGSTRING")
+
                 return fieldValues.toLowerCase().includes(query.toLowerCase());
             } 
-            else if (typeof(fieldValues) === 'Date'){
+            else if (fieldValues instanceof Date){  //should go here because Dates are converted to String when inputted.
                 console.log("DATE,DATEDATE")
             }
             
@@ -365,8 +384,28 @@ const SalesInvoicePage = () => {
         //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
 
+    const sorted_sales_invoice_list = [...filtered_sales_invoice].sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
 
-     const rows = filtered_sales_invoice
+        if (sortColumn === 'customer') {
+            // For sorting by customer name
+            return sortOrder === 'asc' ? valueA.name.localeCompare(valueB.name) : valueB.name.localeCompare(valueA.name);
+        }
+    
+    
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          // For string comparison
+          return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+          // For number comparison
+          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+        }
+        return 0;
+    });
+
+
+     const rows = sorted_sales_invoice_list
     //const rows = sales_invoice
 
 
@@ -388,7 +427,7 @@ const SalesInvoicePage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div>
-        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+        <Stack direction="row" spacing={2} marginBottom={2} marginTop={1} marginLeft={2} marginRight={2} alignItems="flex-start">
             <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
             <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
             <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
@@ -400,7 +439,7 @@ const SalesInvoicePage = () => {
             {/* has own padding ksi haba ng text. overwrites padding ng Styled Button */}
 
             <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
-                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
+                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ marginRight:2, width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
                     id="header-search"
@@ -412,11 +451,11 @@ const SalesInvoicePage = () => {
                     inputProps={{
                         'aria-label': 'weight'
                     }}
-                    placeholder="Search Product Code"
+                    placeholder="Search..."
                     />
                 </FormControl>
 
-                <FormControl component="setsearchfield">
+                <FormControl sx={{ marginRight:2, width: { xs: '40%', md: 550 } }} component="setsearchfield">
                     <RadioGroup
                         row
                         aria-label="searchCriteria"
@@ -449,25 +488,69 @@ const SalesInvoicePage = () => {
 
         </Stack>
 
-
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 500, maxWidth: 1600 }} aria-label="custom pagination table">
+        {/* TO CONSIDER: If walang maxWidth, Table flexes and moves on filter. if may maxWidth, it does take the entire page. */}
+        {/* To revert: remove maxWidth on TableContainer and Table, change (minwidth and maxWidth wordBreak:'break-all') into width lang */}
+        <TableContainer component={Paper} sx={{}}>
+        <Table sx={{ minWidth: 500}} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Invoice Number</StyledTableCell>
-            <StyledTableCell align="center">Reference_PO</StyledTableCell>
-            <StyledTableCell align="center">Customer</StyledTableCell>
-            <StyledTableCell align="center">Date</StyledTableCell>
-            <StyledTableCell align="center">Description</StyledTableCell>
-            <StyledTableCell align="center">Total Amount</StyledTableCell>
-            <StyledTableCell align="center">Payment Terms</StyledTableCell>
-            <StyledTableCell align="center">Payment Due</StyledTableCell>
-            <StyledTableCell align="center">Date Paid</StyledTableCell>
-            <StyledTableCell align="center">Amount Paid</StyledTableCell>
-            <StyledTableCell align="center">BIR 2307</StyledTableCell>
-            <StyledTableCell align="center">SR</StyledTableCell>
-            <StyledTableCell align="center">CR Number</StyledTableCell>
-            <StyledTableCell align="center">Purchase List</StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('invoice_number')}>Invoice Number
+                {sortColumn === 'invoice_number' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'invoice_number' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('reference_PO')} align="center">Reference PO
+                {sortColumn === 'reference_PO' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'reference_PO' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('customer')}  align="center">Customer 
+                {sortColumn === 'customer' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'customer' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 110, maxWidth: 110, cursor: 'pointer' }} onClick={() => handleSort('date')} align="center">Date
+                {sortColumn === 'date' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'date' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell align="center"> Description </StyledTableCell>
+
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('payment_terms')} align="center">Payment Terms
+                {sortColumn === 'payment_terms' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'payment_terms' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 110, maxWidth: 110, cursor: 'pointer' }} onClick={() => handleSort('payment_due')} align="center">Payment Due
+                {sortColumn === 'payment_due' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'payment_due' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 110, maxWidth: 110, cursor: 'pointer' }} onClick={() => handleSort('date_paid')} align="center">Date Paid
+                {sortColumn === 'date_paid' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'date_paid' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('amount_paid')} align="center">Amount Paid
+                {sortColumn === 'amount_paid' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'amount_paid' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('BIR_2307')} align="center">BIR 2307
+                {sortColumn === 'BIR_2307' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'BIR_2307' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('SR')} align="center">SR
+                {sortColumn === 'SR' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'SR' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('CR_number')} align="center">CR Number
+                {sortColumn === 'CR_number' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'CR_number' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{width:350 }} align="center">Purchase List
+                <TableRow>
+                    <StyledTableCell style={{ minWidth: 150, maxWidth: 150 }} align="center" >Product Code</StyledTableCell>
+                    <StyledTableCell  style={{ minWidth: 100, maxWidth: 100 }} align="center">Quantity</StyledTableCell>
+                    <StyledTableCell  style={{ minWidth: 100, maxWidth: 100 }} align="center">Amount</StyledTableCell>
+                </TableRow>
+            </StyledTableCell>
+            <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('total_amount')} align="center">Total Amount
+                {sortColumn === 'total_amount' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'total_amount' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
           </TableRow>
         </TableHead>
             <TableBody>
@@ -476,16 +559,16 @@ const SalesInvoicePage = () => {
                 : rows
             ).map((row) => (
                 <StyledTableRow key={row.invoice_number}>
-                <TableCell style={{ minWidth: 90 }} component="th" scope="row">
+                <TableCell style={{minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} component="th" scope="row">
                     {row.invoice_number}
                 </TableCell>
-                <TableCell style={{ minWidth: 115 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.reference_PO}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.customer.name}
                 </TableCell>
-                <TableCell style={{ minWidth: 100}} align="center">
+                <TableCell style={{ minWidth: 110, maxWidth: 110, wordBreak:'break-all' }} align="center">
                     {(() => {
                     const dateObject = new Date(row.date);
                     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -493,16 +576,13 @@ const SalesInvoicePage = () => {
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.description}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
-                    {row.total_amount}
-                </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.payment_terms}
                 </TableCell>
-                <TableCell style={{ minWidth: 100}} align="center">
+                <TableCell style={{ minWidth: 110, maxWidth: 110, wordBreak:'break-all'}} align="center">
                     {(() => {
                     const dateObject = new Date(row.payment_due);
                     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -510,7 +590,7 @@ const SalesInvoicePage = () => {
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ minWidth: 100}} align="center">
+                <TableCell style={{ minWidth: 110, maxWidth: 110, wordBreak:'break-all'}} align="center">
                     {(() => {
                     const dateObject = row.date_paid ? new Date(row.date_paid) : null;
                     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -518,20 +598,29 @@ const SalesInvoicePage = () => {
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.amount_paid}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.BIR_2307}
                 </TableCell>
-                <TableCell style={{ minWidth: 90 }} align="center">
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.SR}
-                </TableCell>
-                <TableCell style={{ minWidth: 115 }} align="center">
+                </TableCell>    
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
                     {row.CR_Number}
                 </TableCell>
-                <TableCell style={{ minWidth: 100 }} align="center">
-                    <h4>Purchase List Here*</h4>
+                <TableCell style={{  }} align="center">
+                {row.purchase_list.map((purchase_row) => (
+                    <TableRow style={{ }} key={purchase_row.id}>
+                        <TableCell align="center" style={{minWidth: 150, maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis'}}>{purchase_row.product_code}</TableCell>
+                        <TableCell align="center" style={{minWidth: 100, maxWidth: 100, wordBreak:'break-all'}}>{purchase_row.quantity}</TableCell>
+                        <TableCell align="center" style={{minWidth: 100, maxWidth: 100, wordBreak:'break-all'}}>{purchase_row.amount}</TableCell>
+                    </TableRow>
+                ))}
+                </TableCell>
+                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
+                    {row.total_amount}
                 </TableCell>
                 </StyledTableRow>
             ))}
@@ -545,7 +634,7 @@ const SalesInvoicePage = () => {
             <TableRow>
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={4}
+                colSpan={14} //match number of cols of table para mag align to rightmost
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
@@ -559,6 +648,7 @@ const SalesInvoicePage = () => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
                 />
+
             </TableRow>
             </TableFooter>
         </Table>

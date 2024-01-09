@@ -3,8 +3,7 @@ import { useAlertsContext } from "../hooks/useAlertsContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
+
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
@@ -12,16 +11,15 @@ import Stack from '@mui/material/Stack';
 //components
 import AlertsDetails from "../components/AlertsDetails";
 import NavDrawer from "../components/NavDrawer";
-import { Button } from "@mui/material";
 
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+//     ...theme.typography.body2,
+//     padding: theme.spacing(1),
+//     textAlign: 'center',
+//     color: theme.palette.text.secondary,
+// }));
 
 const AlertPage = () => {
     const {state,dispatch} = useAlertsContext()
@@ -87,7 +85,7 @@ const AlertPage = () => {
         </PDFDownloadLink> */}
 
         <div>
-            <h2> Alerts</h2>
+            <h2 className="colored_title"> Alerts</h2>
             
             {state && state.AlertsState && state.AlertsState.alerts && state.AlertsState.alerts.map((alert)=>(
             <AlertsDetails key={alert._id} alert={alert}/>

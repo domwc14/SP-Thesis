@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -14,14 +13,14 @@ import ListItemText from '@mui/material/ListItemText';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 //icons
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+
 import MailIcon from '@mui/icons-material/Mail';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DescriptionIcon from '@mui/icons-material/Description';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { Link,useLocation } from 'react-router-dom';
 
@@ -47,9 +46,9 @@ export default function PermanentDrawerLeft() {
     { text: 'Sales Invoices', icon: <DescriptionIcon sx={{ color: 'green' }}/>, to:'/salesinvoice' },
     { text: 'Inventory', icon: <InventoryIcon sx={{ color: 'green' }}/>, to:'/product' },
     { text: 'Clients', icon: <HandshakeIcon sx={{ color: 'green' }}/>, to:'/clients' },
-    { text: 'Send email', icon: <MailIcon sx={{ color: 'green' }}/>, to:'/email' },
-    { text: 'Alerts', icon: <NotificationImportantIcon sx={{ color: 'green' }}/>,to:'/alerts' },
-    // { text: 'Reports', icon: <AssessmentIcon sx={{ color: 'green' }}/>, to:'/reports' },
+    { text: 'Overdue Invoices', icon: <MailIcon sx={{ color: 'green' }}/>, to:'/email' },
+    { text: 'Stock Alerts', icon: <NotificationImportantIcon sx={{ color: 'green' }}/>,to:'/alerts' },
+    { text: 'Reports', icon: <AssessmentIcon sx={{ color: 'green' }}/>, to:'/reports' },
     
   ];
 

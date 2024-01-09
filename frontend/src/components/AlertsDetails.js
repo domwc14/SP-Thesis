@@ -1,28 +1,8 @@
-import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
-import { useAuthContext } from "../hooks/useAuthContext"
-import Card from '@mui/material/Card';
-
 //components
-import { Button } from "@mui/material";
+
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { Link } from 'react-router-dom';
-
-import {pdf} from "@react-pdf/renderer";
-import Invoice from "./Invoice"
-import { saveAs } from 'file-saver';
-
-
-// const Download_PDF = async (overdueSI) => {
-//     var DocumentHolder = await Invoice(overdueSI)
-
-//     //Reasonings: PDFDownloadLink is only a link to download, but can only handle non-changing data (so no variables)
-//     //so we pass overdueSI (detail of SI), then create a new document with that, then use code below to save.
-//     const blob = await pdf(DocumentHolder).toBlob()
-//     saveAs(blob, overdueSI.invoice_number + 'untitled.pdf')
-
-//   }
-
 
 const AlertsDetails = ({alert}) => {
     //currently alert here is a Product

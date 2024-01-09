@@ -89,6 +89,7 @@ const UpdateInventoryForm = () => {
         <Box>
         <form id="UpdateInventoryForm" className="create" onSubmit={handleSubmit}>
         <h3> Update Product </h3>
+        <h5> *Enter item's Product Code. Fields left blank are not changed or modified.  </h5>
         <label> Product Code / Name</label>
         <input 
             type="text" onChange={(e)=> setProduct_code(e.target.value)}

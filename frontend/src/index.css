@@ -67,9 +67,15 @@ header a {
 }
 
 .colored_title {
-  margin: 0 0 10px 0;
-  font-size: 1.25em;
+  margin: 5px 0 10px 0;
+  font-size: 1.28em;
   color: var(--primary);
+}
+
+.colored_title_big{
+margin: 5px 0 10px 0;
+font-size: 1.75em;
+color: var(--secondary);
 }
 
 /* new workout form */
@@ -182,3 +188,35 @@ form.createuser {
   font-size: 1em;
   margin-left: 10px;
 }
+
+/* Reports page */
+
+/* .dropdownmonths {
+  position: relative;
+  display: inline-block;
+} */
+  
+.dropdown-content {
+  display: flex;
+  flex-direction: column;
+  position: absolute;  /* its opened on top of everything */
+  background-color: #f9f9f9;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-style: solid;
+  border-width: thin;
+}
+
+.report_checkbox {
+  display: inline-grid;
+  grid-template-columns: auto auto; /* Adjust the column size as needed */
+  justify-content: space-between;
+}
+
+.report_checkbox input {
+  margin: 0 0 0 0;
+
+
+}
+

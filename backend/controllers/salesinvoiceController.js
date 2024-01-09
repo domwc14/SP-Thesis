@@ -169,18 +169,20 @@ const deleteSalesInvoice = async (req,res)=> {
     res.status(200).json(salesinvoices)
 }
 
-//UPDATE AT OWN RISK!!! DOES NOT REVERT STOCK DEDUCTION!
+//UPDATE AT OWN RISK!!! DOES NOT REVERT STOCK DEDUCTION!    //if purchase_list is empty, do not recompute total_amount. else may nilagay na bago
+//to overwrite so compute total_amount
 const updateSalesInvoice = async(req,res)=>{
+    const {reference_PO,customer,date,description,payment_terms,payment_due,date_paid,amount_paid,BIR_2307,SR,CR_Number,purchase_list
+    }  = req.body
     const {invoice_number} = req.params
-    const {purchase_list} = req.body
-    console.log("LIST",purchase_list)
     let emptyFields = []    //just so we can make the box turn red, but correct error message is still returned @ if !product
     if (!invoice_number){
         emptyFields.push('invoice_number')
     }
-    if (!purchase_list || purchase_list.length == 0){       //OPTIONAL: turns invoice to nothing bought
-        emptyFields.push('product_code')
-    }
+    // if (!purchase_list || purchase_list.length == 0){       //OPTIONAL: turns invoice to nothing bought
+    //     emptyFields.push('product_code')
+    // }
+
     if(emptyFields.length > 0){
         return res.status(400).json({error: 'Sales Invoice cannot be updated to no purchase ',emptyFields})
     }
@@ -220,10 +222,35 @@ const updateSalesInvoice = async(req,res)=>{
         // Do something with existingProduct if needed
     }
 
+    let salesinvoice;
+    //preserve the current purchase_list if emty. wala naman kasing empty sales invoice dapat.
+    if (!purchase_list || purchase_list.length == 0){       
 
-    const salesinvoice = await SalesInvoice.findOneAndUpdate({
-        invoice_number:invoice_number},{total_amount: total_amount,...req.body
-    })
+        salesinvoice = await SalesInvoice.findOneAndUpdate(
+            { invoice_number: invoice_number },
+            {
+                reference_PO: reference_PO,
+                customer: customer,
+                date: date,
+                description: description,
+                payment_terms: payment_terms,
+                payment_due: payment_due,
+                date_paid: date_paid,
+                amount_paid: amount_paid,
+                BIR_2307: BIR_2307,
+                SR: SR,
+                CR_Number: CR_Number
+            },
+            { new: true }
+        );
+
+    }
+
+    else {
+        salesinvoice = await SalesInvoice.findOneAndUpdate({
+            invoice_number:invoice_number},{total_amount: total_amount, ...req.body
+        })
+    }   
 
     if(!salesinvoice){
         return res.status(404).json({error:'no sales invoice found by that invoice number',emptyFields})
@@ -266,6 +293,132 @@ const getDueSalesInvoices = async(req,res)=>{
 
 }
 
+const getTotalAmountSalesInvoices = async(req,res)=>{
+    const {selectedMonths,selectedYear} = req.body
+    const monthsArray = selectedMonths
+    const year = parseInt(selectedYear,10)
+    console.log("TYPE", typeof(year))
+
+    const monthToNumber = {
+        January: 1,
+        February: 2,
+        March: 3,
+        April: 4,
+        May: 5,
+        June: 6,
+        July: 7,
+        August: 8,
+        September: 9,
+        October: 10,
+        November: 11,
+        December: 12
+    };
+
+    const monthsArrayNumeric = monthsArray.map((month) => monthToNumber[month]);
+
+    console.log(monthsArrayNumeric, year)
+ 
+
+    //match where year from $date == year (as int)
+    //project is creating a new field where we get month from Date 
+    //match where the month is in the request months
+    //group them as to their month, get total then count how many docs
+    const aggregationPipeline = [
+        {
+            $match:{
+                $expr: { $eq: [{ $year: '$date' }, year] }
+            }
+        },
+        {
+            $project: {
+                    month: { $month: '$date' },
+                    total_amount: 1
+                  },
+        },
+        {
+            $match:{
+                month: { $in: monthsArrayNumeric  }
+            }
+        },
+
+        {
+            $group: { _id: "$month", totalSum: { $sum: "$total_amount" }, count: { $sum: 1} }
+         }
+        
+    ]
+    //   const cursor = SalesInvoice.aggregate(aggregationPipeline);
+
+    //   const salesinvoices = await cursor.toArray();
+      const totalsales = await SalesInvoice.aggregate(aggregationPipeline);
+      console.log("TOTALSALES",totalsales)
+      res.status(200).json(totalsales)
+    
+}
+
+const getAccountsReceivableSalesInvoices = async(req,res)=>{
+    const currentDate = new Date();
+    const query = {
+        payment_due: { $lt: currentDate },
+        date_paid: { $eq: undefined },
+        $expr: { $lt: ['$amount_paid', '$total_amount'] },
+      };
+    const salesinvoices = await SalesInvoice.find(query)
+    .populate('customer')
+    .sort({ invoice_number: 1 })
+    .lean(); //converts to JSON because MongoDB objects actually uses BSON. this makes obj.days_overdue = daysOverdue possible.
+
+    let accounts_receivable = 0
+    for (const obj of salesinvoices) {  //total_amount , check if product is real in inventory and if stock > quantity sa purchase list
+        try {
+            accounts_receivable += parseFloat(obj.total_amount);
+            const paymentDueDate = new Date(obj.payment_due);
+
+            //date magic 
+            const daysOverdue = Math.floor((currentDate - paymentDueDate) / (1000 * 60 * 60 * 24));
+            obj.days_overdue = daysOverdue;
+        } catch (error){
+            res.status(400).json({error: error.message})
+        }
+        // console.log(existingProduct)
+        // Do something with existingProduct if needed
+    }
+
+
+    res.status(200).json({salesinvoices,accounts_receivable});
+
+}
+
+const getYearlySalesInvoices = async(req,res)=>{
+    // const {year} = req.body
+    const year = 2023;
+
+
+    //match where year from $date == year (as int)
+    //project is creating a new field where we get month from Date 
+    //match where the month is in the request months
+    //group them as to their month, get total then count how many docs
+    const aggregationPipeline = [
+        {
+            $match:{
+                $expr: { $eq: [{ $year: '$date' },year] }
+            }
+        },
+        {
+            $group: { _id: "$year", totalSum: { $sum: "$total_amount" }, count: { $sum: 1} }
+         }
+        
+    ]
+    //   const cursor = SalesInvoice.aggregate(aggregationPipeline);
+
+    //   const salesinvoices = await cursor.toArray();
+      const totalsales = await SalesInvoice.aggregate(aggregationPipeline);
+      res.status(200).json(totalsales)
+    
+}
+
+
+
+
 
 module.exports = {
     createSalesInvoice,
@@ -273,8 +426,45 @@ module.exports = {
     getAllSalesInvoices,
     deleteSalesInvoice, //eradicate them from their digital existence!
     updateSalesInvoice,
-    getDueSalesInvoices
+    getDueSalesInvoices,
+    getTotalAmountSalesInvoices,
+    getAccountsReceivableSalesInvoices,
+    getYearlySalesInvoices
 }
 
 
-//REQUESTS NOT YET TESTED
+   // const aggregationPipeline = [
+    //     {
+    //       $match: {
+    //         date: { $exists: true },
+    //         amount: { $exists: true },
+    //         $expr: {
+    //           $eq: [{ $year: '$date' }, parseInt(year, 10)] // Filter by year
+    //         }
+    //       }
+    //     },
+    //     {
+    //       $project: {
+    //         month: { $month: '$date' },
+    //         amount: 1
+    //       }
+    //     },
+    //     {
+    //       $group: {
+    //         _id: '$month',
+    //         totalAmount: { $sum: '$amount' }
+    //       }
+    //     },
+    //     {
+    //       $project: {
+    //         _id: 0,
+    //         month: '$_id',
+    //         totalAmount: 1
+    //       }
+    //     },
+    //     {
+    //       $match: {
+    //         month: { $in: monthsArray.map(month => monthsArray.indexOf(month) + 1) }
+    //       }
+    //     }
+    //   ];

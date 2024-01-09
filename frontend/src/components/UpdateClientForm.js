@@ -71,6 +71,7 @@ const UpdateClientForm = () => {
         <Box>
         <form id="UpdateClientForm" className="create" onSubmit={handleSubmit}>
         <h3> Update Client Details </h3>
+        <h5> *Enter Client's name. Fields left blank are not changed or modified.  </h5>
         <label> Client Name</label>
         <input 
             type="text" onChange={(e)=> setName(e.target.value)}

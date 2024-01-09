@@ -3,6 +3,7 @@
 //but shows the document twice (new from action.payload) and old version from previous state). Still need to filter the old version out of prev state
 
 const Product = require('../models/productModel')
+const monthlyInventory = require('../models//monthlyInventoryModel')
 const mongoose = require('mongoose')
 const createProduct = async (req,res) => {
     const {product_code, stock, type , size , color ,description, acquisition_price, unit_price, unit} = req.body
@@ -138,11 +139,77 @@ const updateProduct = async(req,res)=>{
     res.status(200).json(product)
 }
 
+const createmonthlyInventory = async (req,res) => {
+   
+    const aggregationPipeline = [
+    {
+        $project: {
+            totalAmount: {
+                $round: [{ $multiply: ['$stock', '$acquisition_price'] }, 2], // Round to 2 decimal places
+              },
+        }
+    },
+    {
+        $group: {
+        _id: null,
+        totalAmount: { $sum: '$totalAmount' },
+        },
+    },
+    ];
+
+    //change tempdate to date when done
+    date = new Date();
+    const currentMonth = date.getMonth() + 1; // Note: Months are zero-based, so add 1 to get the actual month (1-12).
+    const currentYear = date.getFullYear();
+
+    console.log(`Current Month: ${currentMonth}`);
+    console.log(`Current Year: ${currentYear}`);
+        //emptyFields maybe?
+    
+    let new_inventory_value
+    new_inventory_value = await Product.aggregate(aggregationPipeline); //result is an array
+    new_inventory_value = new_inventory_value[0].totalAmount
+    try {
+        const existingEntry = await monthlyInventory.findOne({
+            $expr: {
+                $and: [
+                    { $eq: [{ $month: '$date' }, currentMonth] },
+                    { $eq: [{ $year: '$date' }, currentYear] },
+                    ],
+            },
+        });
+        if (existingEntry) {
+            //overwrite the current month data.
+            existingEntry.date = date
+            existingEntry.inventory_value = new_inventory_value
+            res.status(200).json(existingEntry)
+        }
+        else {
+            const newEntry = await monthlyInventory.create({date: date, inventory_value: new_inventory_value})
+            res.status(200).json(newEntry)
+
+        }
+    } catch (error){
+        res.status(400).json({error: error.message})
+    }
+
+}
+
+const getAllmonthlyInventory = async (req,res) => {
+    const monthlyTotals = await monthlyInventory.find({}).sort({date: 1})
+    res.status(200).json(monthlyTotals)
+}
+
+
+
+
 
 module.exports = {
     createProduct,
     getSingleProduct,
     getAllProducts,
     deleteProduct, //eradicate them from their digital existence!
-    updateProduct
+    updateProduct,
+    createmonthlyInventory,
+    getAllmonthlyInventory
 }

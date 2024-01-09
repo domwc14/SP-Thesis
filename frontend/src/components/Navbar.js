@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import {Link,useLocation} from 'react-router-dom'
 import { useLogout } from '../hooks/useLogout'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -10,8 +10,23 @@ const Navbar = () => {
         logout()
     }
 
+    const location = useLocation();
+
+    const HeaderTitle = () => {
+        if(location.pathname === "/login"){
+            return "PerSafS Marketing Corporation"
+        }
+        if(location.pathname !== "/login"){
+            const pathParts = location.pathname.split('/');
+            const firstPart = pathParts[1]
+            console.log("TEXT SENT BACK HERE",  firstPart.charAt(0).toUpperCase() + firstPart.slice(1))
+            return firstPart.charAt(0).toUpperCase() + firstPart.slice(1);
+        }
+
+    }
+
     return (
-        <header style={{ fontSize: '18px', padding: '10px', background: 'rgba(0, 0, 0, 1)'  }}>
+        <header style={{ fontSize: '18px', padding: '10px', background: 'rgba(0, 0, 0, 1)',   }}>
             <div className="container">
                 {/* <Link to="/">
                     <h1> Workout Buddy</h1>
@@ -30,8 +45,14 @@ const Navbar = () => {
                     {user && ( 
                         <div>
 
-                            <span>{user.email}</span>
+                            <span style={{ color: 'var(--primary' }}>{user.email}</span>
                             <button onClick={handleLogOut}> Log Out</button>
+                            {/* --primary: #1aac83;
+                            --error: #e7195a;
+                            --secondary: rgb(25, 143, 117);
+                            --tertiary: rgb(13, 102, 77);
+                            --darkergreen1: #155e49;
+                            --gptgreen: #10a37f; */}
                         </div>
                     )}
                     {!user && (

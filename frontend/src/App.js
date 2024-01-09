@@ -11,6 +11,7 @@ import SalesInvoicePage from "./pages/SalesInvoicePage";
 import ClientPage from "./pages/ClientPage"
 import AlertPage from "./pages/AlertPage"
 import UserControlPage from "./pages/UserControlPage"
+import ReportsPage from "./pages/ReportsPage"
 
 
 
@@ -25,6 +26,7 @@ import UserControlPage from "./pages/UserControlPage"
 //the problem is pag refresh, it loses the user (nareretrieve lng siya sa localstorage after) tapos redireted to 
 //<Route path="/login" element={!user ? <Login />: <Navigate to="/"/>} /> which wala paren user so it goes to /
 //
+
 function App() {
   const {user} = useAuthContext()
   return (
@@ -39,7 +41,7 @@ function App() {
             <Route path="/salesinvoice" element={user ? <SalesInvoicePage />: <Navigate to="/login"/>} />
             <Route path="/clients" element={user ? <ClientPage />: <Navigate to="/login"/>} />
             <Route path="/alerts" element={user ? <AlertPage />: <Navigate to="/login"/>} />
-            {/* <Route path="/reports" element={user ? <SalesInvoicePage />: <Navigate to="/login"/>} />  IN PROGRESS*/}
+            <Route path="/reports" element={user ? <ReportsPage />: <Navigate to="/login"/>} />
             <Route path="/usercontrol" element={user ? <UserControlPage />: <Navigate to="/login"/>} />
             <Route path="/login" element={!user ? <Login />: <Navigate to="/"/>} />
 

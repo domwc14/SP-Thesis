@@ -33,17 +33,18 @@ import AddInventoryForm from "../components/AddInventoryForm";
 import UpdateInventoryForm from "../components/UpdateInventoryForm";
 import DeleteInventoryForm from "../components/DeleteInventoryForm";
 import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel} from '@mui/material';
-
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 //FRONTEND DESIGN PART
  
-const StyledButton = styled(Button)({
-    variant:"contained",
-    borderRadius: '20px', // You can adjust the value to control the roundness
-    padding: '10px 20px', // Adjust padding as needed
-    color: 'black',
-    backgroundColor: 'grey'
-  });
+// const StyledButton = styled(Button)({
+//     variant:"contained",
+//     borderRadius: '20px', // You can adjust the value to control the roundness
+//     padding: '10px 20px', // Adjust padding as needed
+//     color: 'black',
+//     backgroundColor: 'grey'
+//   });
 
 
 
@@ -195,6 +196,12 @@ const InventoryPage = () => {
     const [isDeleteFormVisible, setDeleteFormVisible] = useState(false);
     const {inventory_list,dispatch} = useInventoryContext()
 
+    //sorting
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('product_code'); // Default sorting column
+
+
+    //search
     const [query,setQuery] = useState('')
     const [searchField, setSearchField] = useState('product_code');
 
@@ -227,6 +234,18 @@ const InventoryPage = () => {
         setUpdateFormVisible(false);
         setDeleteFormVisible(false);
     };
+
+    const handleSort = (column) => {
+        if (sortColumn === column) {
+          // Toggle sort order if the same column is clicked again
+          setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+        } else {
+          // Set the new sorting column and default to ascending order
+          setSortColumn(column);
+          setSortOrder('asc');
+        }
+      };
+
 
 
     useEffect(()=>{
@@ -312,7 +331,22 @@ const InventoryPage = () => {
         //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
 
-     const rows = filtered_inventory_list
+    const sorted_inventory_list = [...filtered_inventory_list].sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
+    
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          // For string comparison
+          return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+          // For number comparison
+          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+        }
+        return 0;
+    });
+
+
+     const rows = sorted_inventory_list
     //const rows = inventory_list
 
 
@@ -333,7 +367,7 @@ const InventoryPage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div >
-        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+        <Stack direction="row" spacing={2} marginBottom={2} marginTop={1} marginLeft={2} marginRight={2} alignItems="flex-start">
             <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
             <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
             <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
@@ -354,7 +388,7 @@ const InventoryPage = () => {
                     inputProps={{
                         'aria-label': 'weight'
                     }}
-                    placeholder="Search Product Code"
+                    placeholder="Search..."
                     />
                 </FormControl>
 
@@ -394,15 +428,39 @@ const InventoryPage = () => {
         <Table stickyHeader sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Product Code</StyledTableCell>
-            <StyledTableCell align="right">Stock</StyledTableCell>
-            <StyledTableCell align="right">Type</StyledTableCell>
-            <StyledTableCell align="right">Size</StyledTableCell>
-            <StyledTableCell align="right">Color</StyledTableCell>
-            <StyledTableCell align="right">Description</StyledTableCell>
-            <StyledTableCell align="right">Acquisition Price</StyledTableCell>
-            <StyledTableCell align="right">Unit Price</StyledTableCell>
-            <StyledTableCell align="right">Unit</StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('product_code')} align="center">Product Code
+                {sortColumn === 'product_code' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'product_code' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('stock')} align="center">Stock
+                {sortColumn === 'stock' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'stock' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('type')} align="center">Type
+                {sortColumn === 'type' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'type' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('size')} align="center">Size
+                {sortColumn === 'size' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'size' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('color')} align="center">Color
+                {sortColumn === 'color' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'color' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+
+            <StyledTableCell align="center">Description </StyledTableCell>
+
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('acquisition_price')} align="center">Acquisition Price
+                {sortColumn === 'acquisition_price' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'acquisition_price' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('unit_price')} align="center">Unit Price
+                {sortColumn === 'unit_price' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'unit_price' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+
+            <StyledTableCell align="center">Unit</StyledTableCell>
           </TableRow>
         </TableHead>
             <TableBody>
@@ -411,31 +469,31 @@ const InventoryPage = () => {
                 : rows
             ).map((row) => (
                 <StyledTableRow key={row.product_code}>
-                <TableCell style={{ width: 120 }} component="th" scope="row">
+                <TableCell style={{ width: 170 }} component="th" scope="row">
                     {row.product_code}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.stock}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.type}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.size}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.color}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.description}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 180 }} align="center">
                     {row.acquisition_price}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.unit_price}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.unit}
                 </TableCell>
                 </StyledTableRow>
@@ -450,7 +508,7 @@ const InventoryPage = () => {
             <TableRow>
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={4}
+                colSpan={9} //match number of cols of table para mag align to rightmost
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}

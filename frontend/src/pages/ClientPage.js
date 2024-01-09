@@ -1,9 +1,3 @@
-//page where customers/clients are made
-//try making fetch requests as may /api 
-//basically fetch and router on frontend not the same, para pag nag refresh sa frontend, it won't bug into:
-//showing nothing but the json from fetch, frontend UI not showing
-
-
 import { useState, useEffect} from "react";
 import { useClientsContext } from "../hooks/useClientsContext";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -39,17 +33,21 @@ import AddClientForm from "../components/AddClientForm";
 import UpdateClientForm from "../components/UpdateClientForm";
 import DeleteClientForm from "../components/DeleteClientForm";
 import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel } from '@mui/material';
+// import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+// import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 
 //FRONTEND DESIGN PART
 
-const StyledButton = styled(Button)({
-    variant:"contained",
-    borderRadius: '20px', // You can adjust the value to control the roundness
-    padding: '10px 20px', // Adjust padding as needed
-    color: 'black',
-    backgroundColor: 'grey'
-  });
+// const StyledButton = styled(Button)({
+//     variant:"contained",
+//     borderRadius: '20px', // You can adjust the value to control the roundness
+//     padding: '10px 20px', // Adjust padding as needed
+//     color: 'black',
+//     backgroundColor: 'grey'
+//   });
 
 
 
@@ -202,6 +200,9 @@ const ClientPage = () => {
     const {clients_list,dispatch} = useClientsContext()
 
 
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('name'); // Default sorting column
+
     const [query,setQuery] = useState('')
     const [searchField, setSearchField] = useState('name');
 
@@ -231,6 +232,17 @@ const ClientPage = () => {
         setUpdateFormVisible(false);
         setDeleteFormVisible(false);
     };
+
+    const handleSort = (column) => {
+        if (sortColumn === column) {
+          // Toggle sort order if the same column is clicked again
+          setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+        } else {
+          // Set the new sorting column and default to ascending order
+          setSortColumn(column);
+          setSortOrder('asc');
+        }
+      };
 
 
     useEffect(()=>{
@@ -322,12 +334,26 @@ const ClientPage = () => {
         //return item.product_code.toLowerCase().includes(query.toLowerCase());
     })
 
+    const sorted_clients_list = [...filtered_clients_list].sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
+    
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          // For string comparison
+          return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+          // For number comparison
+          return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+        }
+        return 0;
+    });
 
 
 
 
 
-     const rows = filtered_clients_list
+
+     const rows = sorted_clients_list
     //const rows = clients_list
 
 
@@ -348,7 +374,7 @@ const ClientPage = () => {
     <Box sx={{display: 'grid', gridTemplateColumns: '210px 2fr', gap:0}}>
         <div><NavDrawer/></div>
         <div >
-        <Stack direction="row" spacing={2} marginBottom={2} alignItems="flex-start" marginTop={1}>
+        <Stack direction="row" spacing={2} marginBottom={2} marginTop={1} marginLeft={2} marginRight={2} alignItems="flex-start">
             <button style={{}} className="green_button_round" onClick={handleOpenAddForm}> ADD </button>
             <button style={{}} className="green_button_round" onClick={handleOpenUpdateForm}> UPDATE </button>
             <button style={{}} className="green_button_round" onClick={handleOpenDeleteForm}> DELETE </button>
@@ -357,7 +383,7 @@ const ClientPage = () => {
             <StyledButton onClick={handleOpenDeleteForm}> Delete</StyledButton> */}
             {/* YOU ARE HERE  */}
             <Box sx={{ width: '40%', ml: { xs: 0, md: 1 } }}>
-                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ width: { xs: '10%', md: 224 } }}>
+                <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ marginRight:2, width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
                     id="header-search"
@@ -369,7 +395,7 @@ const ClientPage = () => {
                     inputProps={{
                         'aria-label': 'weight'
                     }}
-                    placeholder="Search Client"
+                    placeholder="Search..."
                     />
                 </FormControl>
 
@@ -408,10 +434,22 @@ const ClientPage = () => {
         <Table stickyHeader sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Client Name</StyledTableCell>
-            <StyledTableCell align="right">Type</StyledTableCell>
-            <StyledTableCell align="right">Location</StyledTableCell>
-            <StyledTableCell align="right">Market</StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')} align="center">Client Name 
+                {sortColumn === 'name' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'name' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('customer_type')} align="center">Type
+                {sortColumn === 'customer_type' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'customer_type' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('location')} align="center">Location
+                {sortColumn === 'location' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'location' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
+            <StyledTableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('market')} align="center">Market
+                {sortColumn === 'market' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
+                {sortColumn === 'market' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
+            </StyledTableCell>
           </TableRow>
         </TableHead>
             <TableBody>
@@ -423,13 +461,13 @@ const ClientPage = () => {
                 <TableCell style={{ width: 120 }} component="th" scope="row">
                     {row.name}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.customer_type}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.location}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="right">
+                <TableCell style={{ width: 160 }} align="center">
                     {row.market}
                 </TableCell>
                 </StyledTableRow>
@@ -440,11 +478,11 @@ const ClientPage = () => {
                 </TableRow>
             )}
             </TableBody>
-            <TableFooter>
-            <TableRow>
+            <TableFooter >
+            <TableRow >
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={4}
+                colSpan={4} //match number of cols of table para mag align to rightmost
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
