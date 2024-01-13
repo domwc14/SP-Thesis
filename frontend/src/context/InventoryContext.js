@@ -52,6 +52,14 @@ export const InventoryReducer = (state,action) => {
 
             }
 
+        case 'GET_ALL_MONTHLY_TOTAL':
+            return {
+                //inventory_list: action.payload
+                inventory_list: state.inventory_list.filter((p)=>p._id !== action.payload._id)
+
+            }
+    
+
         default:
             return state
     }

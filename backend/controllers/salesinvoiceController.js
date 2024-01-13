@@ -389,30 +389,67 @@ const getAccountsReceivableSalesInvoices = async(req,res)=>{
 }
 
 const getYearlySalesInvoices = async(req,res)=>{
-    // const {year} = req.body
-    const year = 2023;
+    //YOU ARE HERE. THIS HAS TO CHANGE TO ARRAY OF YEARS DAPAT ITO
+    //assume years 
+    const {selectedYears2Array} = req.body
+    console.log("THIS SHOW UP", req.body)
+    const years = selectedYears2Array.map(year => parseInt(year, 10));
+    console.log("typeof",typeof(years[0]))
 
-
-    //match where year from $date == year (as int)
-    //project is creating a new field where we get month from Date 
-    //match where the month is in the request months
-    //group them as to their month, get total then count how many docs
     const aggregationPipeline = [
         {
             $match:{
-                $expr: { $eq: [{ $year: '$date' },year] }
+                $expr: {
+                    $in: [
+                        { $year: '$date' }, // Extract year from $date
+                        years  // Array of years to match against
+                    ]
+                }
             }
         },
         {
-            $group: { _id: "$year", totalSum: { $sum: "$total_amount" }, count: { $sum: 1} }
-         }
+            $group: { _id: {$year:'$date'}, totalSum: { $sum: "$total_amount" }, count: { $sum: 1} }
+         },
+        {
+            $sort: { _id: 1 } // Sort by year because grouping does not give out ordered results.
+        }
         
     ]
     //   const cursor = SalesInvoice.aggregate(aggregationPipeline);
 
     //   const salesinvoices = await cursor.toArray();
       const totalsales = await SalesInvoice.aggregate(aggregationPipeline);
+      console.log("totalsales",totalsales)
       res.status(200).json(totalsales)
+
+
+
+      // SOLUTION 2: result is array
+    // const yearlyResults = [];
+
+    // // Iterate through each year
+    // for (const year of years) {
+    //     // Define the aggregation pipeline for the current year
+    //     const aggregationPipeline = [
+    //         {
+    //             $match: {
+    //                 $expr: { $eq: [{ $year: '$date' }, year] }
+    //             }
+    //         },
+    //         {
+    //             $group: { _id: year, totalSum: { $sum: "$total_amount" }, count: { $sum: 1 } }
+    //         }
+    //     ];
+
+    //     // Execute the aggregation pipeline for the current year
+    //     const totalsales = await SalesInvoice.aggregate(aggregationPipeline);
+
+    //     // Push the result for the current year to the array
+    //     yearlyResults.push(...totalsales);
+    // }
+    // console.log(("TYPEOFRESULT",typeof(yearlyResults)))
+    // // Send the array of results as the response
+    // res.status(200).json(yearlyResults);
     
 }
 

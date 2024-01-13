@@ -200,6 +200,17 @@ const getAllmonthlyInventory = async (req,res) => {
     res.status(200).json(monthlyTotals)
 }
 
+const getAllmonthlyByYear = async (req,res) => {
+    const {selectedYear3} = req.body
+    const monthlyTotals = await monthlyInventory.find({
+        $expr: {
+            $eq: [{ $year: '$date' }, selectedYear3]
+        }
+    }).sort({ date: 1 });
+    // console.log("THIS IS SENT BACK", monthlyTotals)
+    res.status(200).json(monthlyTotals)
+}
+
 
 
 
@@ -211,5 +222,6 @@ module.exports = {
     deleteProduct, //eradicate them from their digital existence!
     updateProduct,
     createmonthlyInventory,
-    getAllmonthlyInventory
+    getAllmonthlyInventory,
+    getAllmonthlyByYear
 }

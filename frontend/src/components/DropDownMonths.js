@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const DropDownMonths = ({ onSelectMonths }) => {
+const DropDownMonths = ({ onSelectMonths, initialSelectedMonths }) => {
   const [isOpen, setIsOpen] = useState(false);
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const [selectedMonths, setSelectedMonths] = useState([]);
+  const [selectedMonths, setSelectedMonths] = useState(initialSelectedMonths);
+
+  useEffect(() => {
+    // If initialSelectedMonths prop changes, update the selectedMonths state
+    setSelectedMonths(initialSelectedMonths || []);
+  }, [initialSelectedMonths]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

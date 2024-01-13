@@ -8,17 +8,18 @@ const {
     deleteProduct, //eradicate them from their digital existence!
     updateProduct,
     createmonthlyInventory,
-    getAllmonthlyInventory
+    getAllmonthlyInventory,
+    getAllmonthlyByYear
+
 } = require('../controllers/productController')
 const router = express.Router()
 
 router.get('/',getAllProducts)
 router.post('/addproduct', createProduct)
 
+router.post('/getAllmonthlyByYear', getAllmonthlyByYear)
 router.get('/getAllmonthly', getAllmonthlyInventory)
 router.post('/addmonthly', createmonthlyInventory)
-
-
 
 router.get('/:product_code', getSingleProduct)
 router.delete('/:product_code',deleteProduct)
