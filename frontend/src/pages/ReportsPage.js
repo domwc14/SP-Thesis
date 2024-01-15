@@ -36,6 +36,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 //components
 import NavDrawer from "../components/NavDrawer";
 import MonthsDropdown from '../components/DropDownMonths';
+import ExportButton from '../components/excelFunctions/Export.js'; // Update the path
 
 
 
@@ -316,7 +317,7 @@ const ReportsPage = () => {
         <div><NavDrawer/></div>
         <div>
         <Box sx={{ width: '100%' }}>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            <Grid container rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                 {/* This is rezising for small screen but graphs inside dont resize with the Grid sooooo xs={6}  */}
                 <Grid item> 
                     <Item>
@@ -347,7 +348,7 @@ const ReportsPage = () => {
                         {selectedMonths} */}
                     </Item>
                 </Grid>
-                    <Grid item  md={4}>
+                    <Grid item>
                     <Item>
                       <Stack  direction="row" alignItems="flex-start">
                         <form id="SelectedYears2">
@@ -377,7 +378,7 @@ const ReportsPage = () => {
                         }
                     </Item>
                     </Grid>
-                    <Grid item md={4}>
+                    <Grid item>
                     <Item>
                         {/* 3 */}
                         <Stack  direction="row" alignItems="flex-start">
@@ -424,8 +425,10 @@ const ReportsPage = () => {
                             /> */}
                     </Item>
                     </Grid>
-                    <Grid item md={4}>
-                    <Item>4</Item>
+                    <Grid item>
+                    <Item>
+                        <ExportButton jsonData={chartData1} />
+                    </Item>
                 </Grid>
             </Grid>
         </Box>
