@@ -14,7 +14,7 @@ const ExportButton = ({ jsonData }) => {
         Sheets:{
             'data': ws,
         },
-        SheetNames:['data',"sheet2"]
+        SheetNames:['data',"sheet2","sheet3"]
     };
     const excelBuffer = XLSX.write(wb,{bookType: 'xlsx',type: "array", })
     console.log("EXCEL BUFFER", excelBuffer)
