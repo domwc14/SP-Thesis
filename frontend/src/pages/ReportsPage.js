@@ -36,7 +36,11 @@ import { BarChart } from '@mui/x-charts/BarChart';
 //components
 import NavDrawer from "../components/NavDrawer";
 import MonthsDropdown from '../components/DropDownMonths';
-import ExportButton from '../components/excelFunctions/Export.js'; // Update the path
+import ExportButton from '../components/excelFunctions/Export.js'; 
+import ExportButton2 from '../components/excelFunctions/Export2.js'; 
+import ExportButton3 from '../components/excelFunctions/Export3.js';
+import ExportStockAlertsButton from "../components/excelFunctions/ExportStockAlerts.js";
+import ExportAccountsReceivables from "../components/excelFunctions/ExportAccountReceivables.js";
 
 
 
@@ -332,6 +336,10 @@ const ReportsPage = () => {
                         </form>
                         <button type="submit" className="green_button" onClick={(e) => handleSubmit(e)}> Submit </button>
                         </Stack>
+
+                        {chartData1.length > 0 && (
+                        <div>
+                          <h3 style={{ textAlign: 'center' }}>Monthly Sales</h3>
                         <LineChart
                             xAxis={[{ data: chartData1.map(item => item._id) }]}
                             series={[
@@ -342,7 +350,12 @@ const ReportsPage = () => {
                             width={500}
                             height={300}
                             />
+                        </div>
+                        )}
 
+                        <Stack direction="row" alignItems="flex-start">
+                        <ExportButton jsonData={chartData1} />
+                        </Stack>
                         {/* { console.log(typeof(selectedMonths)) }
                         { console.log(selectedMonths) }
                         {selectedMonths} */}
@@ -352,7 +365,7 @@ const ReportsPage = () => {
                     <Item>
                       <Stack  direction="row" alignItems="flex-start">
                         <form id="SelectedYears2">
-                        <label> Year</label>
+                        <label>Years (YYYY,YYYY....)</label>
                         <input 
                             type="text" onChange={(e)=> setSelectedYears2(e.target.value)}
                             value={selectedYears2}
@@ -361,6 +374,8 @@ const ReportsPage = () => {
                         <button type="submit" className="green_button" onClick={(e) => handleSubmit2(e)}> Submit </button>
                       </Stack>
                       {chartData2.length > 0 && (
+                        <div>
+                          <h3 style={{ textAlign: 'center' }}>Yearly Sales</h3>
                         <BarChart
                             label='Bar Chart Title'
                             xAxis={[{ scaleType: 'band', data: chartData2.map(item => item._id), label: 'Year' }]}
@@ -374,8 +389,11 @@ const ReportsPage = () => {
                             width={500}
                             height={300}
                         />
-                        )
-                        }
+                        </div>
+                        )}
+                        <Stack direction="row" alignItems="flex-start">
+                        <ExportButton2 jsonData={chartData2} />
+                        </Stack>
                     </Item>
                     </Grid>
                     <Grid item>
@@ -394,6 +412,8 @@ const ReportsPage = () => {
                         {/* checks if chartData3 exists so it won't error. basically since it's async, pag na load na tska siya ididisplay  */}
                         {/* data: Object.keys(chartData3).map(key => chartData3[key].date) */}
                         {chartData3.length > 0 && (
+                        <div>
+                          <h3 style={{ textAlign: 'center' }}>Monthly Inventory Value</h3>
                         <BarChart
                             //  dataset={chartData3}
                             yAxis={[{scaleType: 'band',
@@ -411,23 +431,17 @@ const ReportsPage = () => {
 
                             width={500}
                             height={300}
-                        />)
-                        }
-                        {/* <LineChart
-                            xAxis={[{ data: chartData3.map(item => item.date.toString()) }]}
-                            series={[
-                                {
-                                    data: chartData3.map(item => item.inventory_value),
-                                },
-                            ]}
-                            width={500}
-                            height={300}
-                            /> */}
+                        />
+                        </div>
+                        )}
+                        <Stack direction="row" alignItems="flex-start">
+                        <ExportButton3 jsonData={chartData3} selectedYear3={selectedYear3}  />
+                        </Stack>
                     </Item>
                     </Grid>
                     <Grid item>
                     <Item>
-                        <ExportButton jsonData={chartData1} />
+                        <ExportAccountsReceivables />
                     </Item>
                 </Grid>
             </Grid>
