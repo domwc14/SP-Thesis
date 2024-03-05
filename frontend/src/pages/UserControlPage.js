@@ -10,8 +10,17 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()  //this disables the auto refresh page
+        try {
+            await  signup(email,password)
+            setEmail('');
+            setPassword('');
+            alert('User created successfully!');
+        }
+        catch (error) {
+            alert('User creation failed: ' + error.message);
+        }
 
-        await signup(email,password)
+
     }
 
     return (

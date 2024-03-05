@@ -25,7 +25,6 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import Stack from '@mui/material/Stack';
 
-
 //components
 import NavDrawer from "../components/NavDrawer";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
@@ -36,6 +35,7 @@ import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormContr
 import GeneratePDFForm from "../components/GeneratePDFForm";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ExportSalesInvoice from "../components/excelFunctions/ExportSalesInvoice";
 
 
 
@@ -178,7 +178,7 @@ const UpdateFormDialog = ({ open, onClose }) => {
 const DeleteFormDialog = ({ open, onClose }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Delete SalesInvoice</DialogTitle>
+            <DialogTitle>Delete Sales Invoice</DialogTitle>
             <DialogContent>
                 {/* Your form content goes here */}
                 <DeleteSalesInvoiceForm/>
@@ -336,6 +336,9 @@ const SalesInvoicePage = () => {
     }
 
     const filtered_sales_invoice = sales_invoice_list.filter(invoice=>{
+        if (query === '' && searchField === 'invoice_number') {
+            return true; // Show all documents when query is empty and search field is 'invoice_number'
+        }
         const fieldValues = getFieldValues(invoice, searchField);
         console.log("FIELDVALS",fieldValues)
         // console.log("FIELDVALUE", fieldValues)
@@ -438,7 +441,7 @@ const SalesInvoicePage = () => {
             <StyledButton sx={{ padding: '10px 30px ' }} onClick={handleOpenGenerateForm}> Generate Documents</StyledButton> */}
             {/* has own padding ksi haba ng text. overwrites padding ng Styled Button */}
 
-            <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
+            <Box sx={{ width: '40%', ml: { xs: 0, md: 1 } }}>
                 <FormControl onChange={(e)=>setQuery(e.target.value)} sx={{ marginRight:2, width: { xs: '10%', md: 224 } }}>
                     <OutlinedInput
                     size="small"
@@ -467,7 +470,7 @@ const SalesInvoicePage = () => {
                         <FormControlLabel value="reference_PO" control={<Radio size="small" />} label="Reference PO" />
                         <FormControlLabel value="customer.name" control={<Radio size="small" />} label="Customer Name" />
                         <FormControlLabel value="date" control={<Radio size="small" />} label="Date" />
-                        <FormControlLabel value="total_amount" control={<Radio size="small" />} label="Total Amount" />
+                        <FormControlLabel value="amount_paid" control={<Radio size="small" />} label="Amount Paid" />
                         <FormControlLabel value="payment_terms" control={<Radio size="small" />} label="Payment Terms" />
                         <FormControlLabel value="payment_due" control={<Radio size="small" />} label="Payment Due" />
                         <FormControlLabel value="date_paid" control={<Radio size="small" />} label="Date Paid" />
@@ -488,6 +491,8 @@ const SalesInvoicePage = () => {
 
         </Stack>
 
+
+        
         {/* TO CONSIDER: If walang maxWidth, Table flexes and moves on filter. if may maxWidth, it does take the entire page. */}
         {/* To revert: remove maxWidth on TableContainer and Table, change (minwidth and maxWidth wordBreak:'break-all') into width lang */}
         <TableContainer component={Paper} sx={{}}>
@@ -510,7 +515,7 @@ const SalesInvoicePage = () => {
                 {sortColumn === 'date' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
                 {sortColumn === 'date' && sortOrder === 'desc' && <ArrowDropDownIcon style={{ color: 'white' }} />}
             </StyledTableCell>
-            <StyledTableCell align="center"> Description </StyledTableCell>
+            <StyledTableCell style={{minWidth: 90, maxWidth: 90}} align="center"> Description </StyledTableCell>
 
             <StyledTableCell style={{minWidth: 100, maxWidth: 100, cursor: 'pointer' }} onClick={() => handleSort('payment_terms')} align="center">Payment Terms
                 {sortColumn === 'payment_terms' && sortOrder === 'asc' && <ArrowDropUpIcon style={{ color: 'white' }} />}    
@@ -571,12 +576,12 @@ const SalesInvoicePage = () => {
                 <TableCell style={{ minWidth: 110, maxWidth: 110, wordBreak:'break-all' }} align="center">
                     {(() => {
                     const dateObject = new Date(row.date);
-                    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const options = { day: '2-digit', month: '2-digit', year: 'numeric', };
                     const formattedDate = dateObject.toLocaleDateString('en-US', options).replace(/\//g, '-');
                     return formattedDate;
                     })()}
                 </TableCell>
-                <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
+                <TableCell style={{ minWidth: 90, maxWidth: 90, wordBreak:'break-all' }} align="center">
                     {row.description}
                 </TableCell>
                 <TableCell style={{ minWidth: 100, maxWidth: 100, wordBreak:'break-all' }} align="center">
@@ -632,12 +637,15 @@ const SalesInvoicePage = () => {
             </TableBody>
             <TableFooter>
             <TableRow>
+                    <TableCell colSpan={2}>
+                    <ExportSalesInvoice style={{width: '100%' }} jsonData={sorted_sales_invoice_list}/>
+                    </TableCell>
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={14} //match number of cols of table para mag align to rightmost
                 count={rows.length}
                 rowsPerPage={rowsPerPage}
-                page={page}
+                page={page} 
                 SelectProps={{
                     inputProps: {
                     'aria-label': 'rows per page',

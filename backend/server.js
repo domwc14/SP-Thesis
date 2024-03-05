@@ -65,7 +65,18 @@ mongoose.connect(process.env.dbURI)
     })
 
 //TEMPORARY FOR POPULATION
+
 // const SalesInvoice = require('./models/salesInvoiceModel');
+
+// SalesInvoice.updateMany({}, [
+//   { $set: { invoice_number: { $toInt: "$invoice_number" } } }
+// ], { multi: true })
+//   .then(result => {
+//     console.log(result);
+//   })
+//   .catch(error => {
+//     console.error(error);
+//   });
 
 // const Chance = require('chance');
 // const chance = new Chance();

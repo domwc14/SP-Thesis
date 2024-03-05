@@ -6,7 +6,7 @@ const Customer = require('./customerModel')
 const Schema = mongoose.Schema
 const salesInvoiceSchema = new Schema ({
     invoice_number: {
-        type: String,
+        type: Number,
         required: true
     },
     reference_PO: {

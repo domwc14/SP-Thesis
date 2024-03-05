@@ -25,6 +25,7 @@ export const SalesInvoiceReducer = (state,action) => {
             return {sales_invoice_list: action.payload}
 
         case 'CREATE_SALES_INVOICE':
+            console.log("create invoice JSON sent to reducer",action.payload)
             return{
                 //action.payload is a single new workout
                 //... state- > current state

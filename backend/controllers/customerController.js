@@ -1,6 +1,7 @@
 
 
 const Customer = require('../models/customerModel')
+const SalesInvoice = require('../models/salesInvoiceModel')
 const mongoose = require('mongoose')
 
 const createCustomer = async (req,res) => {
@@ -71,6 +72,19 @@ const deleteCustomer = async (req,res)=> {
     // if(!mongoose.Types.ObjectId.isValid(id)){
     //     return res.status(404).json({error:'invalid ID'})
     // }
+
+    // const existingSalesInvoice = await SalesInvoice.find({ 'customer.name': name }).populate('customer'); DOESNT WORK
+    const Allsalesinvoices = await SalesInvoice.find({})
+    .populate('customer')
+    .sort({ invoice_number: 1 });
+
+    const existingSalesInvoice = Allsalesinvoices.find(invoice => invoice.customer.name === name);
+
+    if(existingSalesInvoice){
+        emptyFields.push('name')
+        return res.status(404).json({error:'This customer has a sales invoice in the system. They cannot be deleted.',emptyFields})
+    }
+    res.status(200).json()
     const customer = await Customer.findOneAndDelete({ name: name });
     if(!customer){
         return res.status(404).json({error:'no customer found by that name',emptyFields})

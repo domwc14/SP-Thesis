@@ -139,7 +139,7 @@ const updateProduct = async(req,res)=>{
     res.status(200).json(product)
 }
 
-const createmonthlyInventory = async (req,res) => {
+const createmonthlyInventory = async (req,res) => { //create an entry of the current value of inventory for the current month.
    
     const aggregationPipeline = [
     {
@@ -182,6 +182,8 @@ const createmonthlyInventory = async (req,res) => {
             //overwrite the current month data.
             existingEntry.date = date
             existingEntry.inventory_value = new_inventory_value
+            await existingEntry.save();
+            console.log("EXISTING ENTRY",existingEntry)
             res.status(200).json(existingEntry)
         }
         else {

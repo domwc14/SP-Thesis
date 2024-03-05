@@ -110,6 +110,8 @@ const createSalesInvoice = async (req,res) => {
         const salesinvoice = await SalesInvoice.create({invoice_number,reference_PO,customer,date,description,
             total_amount,payment_terms,payment_due,date_paid,amount_paid,BIR_2307,SR,CR_Number,purchase_list
         })
+        console.log("create invoice JSON sent from backend",salesinvoice)
+        await salesinvoice.populate('customer'); //when sent back, it needs to be populated already para ma display agad customer.name
         res.status(200).json(salesinvoice)
     } catch (error){
         res.status(400).json({error: error.message,emptyFields})
@@ -343,7 +345,10 @@ const getTotalAmountSalesInvoices = async(req,res)=>{
 
         {
             $group: { _id: "$month", totalSum: { $sum: "$total_amount" }, count: { $sum: 1} }
-         }
+         },
+         {
+            $sort: { _id: 1 } // Sort by _id in ascending order
+        }
         
     ]
     //   const cursor = SalesInvoice.aggregate(aggregationPipeline);
@@ -389,11 +394,9 @@ const getAccountsReceivableSalesInvoices = async(req,res)=>{
 }
 
 const getYearlySalesInvoices = async(req,res)=>{
-    //YOU ARE HERE. THIS HAS TO CHANGE TO ARRAY OF YEARS DAPAT ITO
-    //assume years 
-    const {selectedYears2Array} = req.body
+    const {selectedYears2} = req.body
     console.log("THIS SHOW UP", req.body)
-    const years = selectedYears2Array.map(year => parseInt(year, 10));
+    const years = selectedYears2.map(year => parseInt(year, 10));
     console.log("typeof",typeof(years[0]))
 
     const aggregationPipeline = [

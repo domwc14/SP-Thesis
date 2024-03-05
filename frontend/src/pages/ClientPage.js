@@ -37,6 +37,7 @@ import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormContr
 // import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ExportClient from "../components/excelFunctions/ExportClient";
 
 
 //FRONTEND DESIGN PART
@@ -480,6 +481,9 @@ const ClientPage = () => {
             </TableBody>
             <TableFooter >
             <TableRow >
+                    <TableCell colSpan={2}>
+                        <ExportClient style={{width: '100%' }} jsonData={sorted_clients_list}/>
+                    </TableCell>
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={4} //match number of cols of table para mag align to rightmost

@@ -8,6 +8,11 @@ const ExportButton3 = ({ jsonData,selectedYear3 }) => {
         jsonData[i] = rest;
     }
 
+    for (let i = 0; i < jsonData.length; i++) {
+      let formattedDate = jsonData[i].date.split("T")[0]
+      jsonData[i].date = formattedDate
+  }
+
   const handleExportClick = () => {
     // Create a worksheet from the JSON data
     const ws = XLSX.utils.json_to_sheet(jsonData);

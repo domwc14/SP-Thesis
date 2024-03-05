@@ -35,6 +35,7 @@ import DeleteInventoryForm from "../components/DeleteInventoryForm";
 import {FormControl, InputAdornment, OutlinedInput, Radio, RadioGroup, FormControlLabel} from '@mui/material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ExportInventory from "../components/excelFunctions/ExportInventory";
 
 //FRONTEND DESIGN PART
  
@@ -506,6 +507,9 @@ const InventoryPage = () => {
             </TableBody>
             <TableFooter>
             <TableRow>
+                <TableCell colSpan={2}>
+                    <ExportInventory style={{width: '100%' }} jsonData={sorted_inventory_list}/>
+                </TableCell>
                 <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={9} //match number of cols of table para mag align to rightmost

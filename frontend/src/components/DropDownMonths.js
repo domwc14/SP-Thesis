@@ -31,6 +31,16 @@ const DropDownMonths = ({ onSelectMonths, initialSelectedMonths }) => {
     setIsOpen(false);
   };
 
+  const handleSelectAll = () => {
+    // Select all months
+    setSelectedMonths(months);
+  };
+
+  const handleDeselectAll = () => {
+    // Deselect all months
+    setSelectedMonths([]);
+  };
+
   return (
     <div className="dropdownmonths">
       <button className="dropbtn" onClick={toggleDropdown}>
@@ -49,6 +59,25 @@ const DropDownMonths = ({ onSelectMonths, initialSelectedMonths }) => {
               />
             </label>
           ))}
+
+          <label className="report_checkbox">
+            Select All
+            <input
+              type="checkbox"
+              onChange={handleSelectAll}
+              checked={selectedMonths.length === months.length} //not sure if needed or not, can be commented i think?
+            />
+          </label>
+          <label className="report_checkbox">
+            Deselect All
+            <input
+              type="checkbox"
+              onChange={handleDeselectAll}
+              checked={selectedMonths.length === 0}
+            />
+          </label>
+
+
           <button sx={{marginTop: '5px' }} onClick={handleApplySelection}>Apply</button>
         </div>
       )}

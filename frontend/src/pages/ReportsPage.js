@@ -1,7 +1,6 @@
 // PROBLEM: graph2: on initialize selectedYears2 is an array of 1 number. Pero on submit, it is a sring, processed to array of numbers.
 //solution: unang send sa useEffect: yung singlesend: tempselectedYears2 array of 1 numbber. Pero on handleSubmit2, selectedYears2 is a string. process on submit na lng
 import { useState, useEffect} from "react";
-import { useClientsContext } from "../hooks/useClientsContext";
 import { useSalesInvoiceContext } from "../hooks/useSalesInvoiceContext";
 import { useInventoryContext } from "../hooks/useInventoryContext";
 
@@ -10,24 +9,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 
 //mui table
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import { LineChart } from '@mui/x-charts/LineChart';
@@ -41,7 +24,8 @@ import ExportButton2 from '../components/excelFunctions/Export2.js';
 import ExportButton3 from '../components/excelFunctions/Export3.js';
 import ExportStockAlertsButton from "../components/excelFunctions/ExportStockAlerts.js";
 import ExportAccountsReceivables from "../components/excelFunctions/ExportAccountReceivables.js";
-
+import SaveInventoryValue from "../components/SaveInventoryValue.js";
+import DropDownYears from "../components/DropDownYears.js";
 
 
 // import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -64,29 +48,58 @@ const ReportsPage = () => {
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    const {sales_invoice_list, dispatch: salesInvoiceDispatch} = useSalesInvoiceContext()
-    const {inventory_list,dispatch: inventoryDispatch} = useInventoryContext()
+    const monthNamesAbbrev = [
+      'Jan.', 'Feb.', 'March', 'April', 'May', 'June',
+      'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'
+    ];
+
+    // const {sales_invoice_list, dispatch: salesInvoiceDispatch} = useSalesInvoiceContext()
+    // const {inventory_list,dispatch: inventoryDispatch} = useInventoryContext()
 
     const {user} = useAuthContext()
 
     //graph1
     const [selectedMonths, setSelectedMonths] = useState( () => {
+        //start the highest, 
+        const last3months = []
         const currDate = new Date()
-        const currmonth = monthNames[currDate.getMonth()];
-        return [currmonth];
+        let currmonthNum = currDate.getMonth() //4
+        for (currmonthNum; currmonthNum >= 0 ; currmonthNum--){ //unshift is push from the left.
+          if(last3months.length < 3){
+          last3months.unshift(monthNames[currmonthNum]);
+          }
+          else {
+            break
+          }
+        }
+        return last3months;
       })
     const [selectedYear, setSelectedYear] = useState( ()=> {
       const currDate = new Date()
-      const Year = currDate.getFullYear()
+      const Year = currDate.getFullYear() //2023
       return Year
      })
     const [chartData1, setchartData1] = useState([])
 
     //graph 2
      const [selectedYears2, setSelectedYears2] = useState( ()=> {
+      // const currDate = new Date()
+      // const stringYear = currDate.getFullYear().toString()
+      // return [stringYear]
+      
+      const last3years = []
       const currDate = new Date()
-      const stringYear = currDate.getFullYear().toString()
-      return stringYear
+      let currYearNum = currDate.getFullYear()
+      for (currYearNum; currYearNum >= 2020 ; currYearNum--){ //unshift is push from the left.
+        if(last3years.length < 3){
+        last3years.unshift(currYearNum.toString());
+        }
+        else {
+          break
+        }
+      }
+      return last3years;
+
      })
     // const [selectedYears2, setSelectedYears2] = useState( () => {
     //   const currDate = new Date()
@@ -167,13 +180,10 @@ const ReportsPage = () => {
 
       const fetchData2 = async()=> {
         try {
-          const splitArray = selectedYears2.split(',');
-          // Step 2: Convert each split string to an integer
-          const selectedYears2Array = splitArray.map(str => parseInt(str, 10));
-          console.log("sentselectedyears2", selectedYears2Array)
           const response = await fetch('/api/salesinvoice/getYearTotal', {
             method:'POST',
-            body: JSON.stringify({selectedYears2Array}),
+            // body: JSON.stringify({selectedYears2Array}),
+            body: JSON.stringify({selectedYears2}),
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${user.token}`
@@ -238,20 +248,13 @@ const ReportsPage = () => {
 
     //finish fetch at handlesubmit2, when working; copy paste to UseEffect
     const handleSubmit2 = async (e) => {
-    //process here so that each year is separated by commas, and create a new array to sent
-      //
-      e.preventDefault(); 
-      const splitArray = selectedYears2.split(',');
-
-      // Step 2: Convert each split string to an integer
-      const selectedYears2Array = splitArray.map(str => parseInt(str, 10));
-
-
+      if (e) {
+        e.preventDefault();
+      }
       try {
-        console.log("sentselectedyears2", selectedYears2Array)
         const response = await fetch('/api/salesinvoice/getYearTotal', {
           method:'POST',
-          body: JSON.stringify({selectedYears2Array}),
+          body: JSON.stringify({selectedYears2}),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${user.token}`
@@ -313,6 +316,10 @@ const ReportsPage = () => {
     const handleSelectMonths = (months) => {
         setSelectedMonths(months);
       };
+    
+    const handleSelectYears2 = (selectedYears) => {
+      setSelectedYears2(selectedYears);
+    };
 
     
 
@@ -321,12 +328,13 @@ const ReportsPage = () => {
         <div><NavDrawer/></div>
         <div>
         <Box sx={{ width: '100%' }}>
-            <Grid container rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            <Grid padding={2}  container rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                 {/* This is rezising for small screen but graphs inside dont resize with the Grid sooooo xs={6}  */}
                 <Grid item> 
                     <Item>
-                        <Stack  direction="row" alignItems="flex-start">
+                        <Stack spacing={2}  direction="row" alignItems="center">
                         <MonthsDropdown onSelectMonths={handleSelectMonths} initialSelectedMonths={selectedMonths} />
+                        
                         <form id="SelectedYear">
                         <label> Year</label>
                         <input 
@@ -341,14 +349,21 @@ const ReportsPage = () => {
                         <div>
                           <h3 style={{ textAlign: 'center' }}>Monthly Sales</h3>
                         <LineChart
-                            xAxis={[{ data: chartData1.map(item => item._id) }]}
+                            xAxis={[{ 
+                              scaleType:"band",
+                              data: chartData1.map(item =>
+                              monthNamesAbbrev[item._id - 1]),
+                              label: "Month",
+                              }]}
                             series={[
                                 {
                                     data: chartData1.map(item => item.totalSum),
+                                    label: "Monthly Sales (Php)"
                                 },
                             ]}
-                            width={500}
-                            height={300}
+                            width={550}
+                            height={350}
+                            // margin={{ left: 30, right: 10, top: 20, bottom: 20 }}
                             />
                         </div>
                         )}
@@ -363,22 +378,23 @@ const ReportsPage = () => {
                 </Grid>
                     <Grid item>
                     <Item>
-                      <Stack  direction="row" alignItems="flex-start">
-                        <form id="SelectedYears2">
+                    <Stack spacing={2}  direction="row" alignItems="center">
+                        <DropDownYears onSelectYears={handleSelectYears2} initialSelectedYears={selectedYears2}/>
+                        {/* <form id="SelectedYears2">
                         <label>Years (YYYY,YYYY....)</label>
                         <input 
                             type="text" onChange={(e)=> setSelectedYears2(e.target.value)}
                             value={selectedYears2}
                         />
-                        </form>
+                        </form> */}
                         <button type="submit" className="green_button" onClick={(e) => handleSubmit2(e)}> Submit </button>
                       </Stack>
                       {chartData2.length > 0 && (
                         <div>
                           <h3 style={{ textAlign: 'center' }}>Yearly Sales</h3>
                         <BarChart
-                            label='Bar Chart Title'
-                            xAxis={[{ scaleType: 'band', data: chartData2.map(item => item._id), label: 'Year' }]}
+                            //toString para yung 2023 and 2024 hindi 2,023 and 2,024 (shown as string not num)
+                            xAxis={[{ scaleType: 'band', data: chartData2.map(item => item._id.toString()), label: 'Year' }]}
                             series={[
                                 {
                                     data: chartData2.map(item => item.totalSum),
@@ -386,8 +402,8 @@ const ReportsPage = () => {
                         
                                 },
                             ]}
-                            width={500}
-                            height={300}
+                            width={550}
+                            height={350}
                         />
                         </div>
                         )}
@@ -399,7 +415,7 @@ const ReportsPage = () => {
                     <Grid item>
                     <Item>
                         {/* 3 */}
-                        <Stack  direction="row" alignItems="flex-start">
+                        <Stack spacing={2}  direction="row" alignItems="center">
                             <form id="SelectedYear">
                             <label> Year</label>
                             <input 
@@ -414,6 +430,7 @@ const ReportsPage = () => {
                         {chartData3.length > 0 && (
                         <div>
                           <h3 style={{ textAlign: 'center' }}>Monthly Inventory Value</h3>
+                          {console.log("CHART3",chartData3)}
                         <BarChart
                             //  dataset={chartData3}
                             yAxis={[{scaleType: 'band',
@@ -428,9 +445,9 @@ const ReportsPage = () => {
                             series={[{ data: Object.keys(chartData3).map(key => chartData3[key].inventory_value), label: 'Inventory Value (Php)'}]}
                             layout="horizontal"
                             xAxis={[{ label: 'Monthly Inventory Value (Php)' }]}
-
-                            width={500}
-                            height={300}
+                            width={550}
+                            height={350}
+                            margin={{right: 30, left: 60 }} 
                         />
                         </div>
                         )}
@@ -441,7 +458,10 @@ const ReportsPage = () => {
                     </Grid>
                     <Grid item>
                     <Item>
+                        <Stack spacing={1} direction="column" alignItems="flex-start">
                         <ExportAccountsReceivables />
+                        <SaveInventoryValue />
+                        </Stack>
                     </Item>
                 </Grid>
             </Grid>

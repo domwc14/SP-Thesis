@@ -10,7 +10,7 @@ const AlertsDetails = ({alert}) => {
 //className="overduesalesinvoice-details" 
     return (
         <div className="overduesalesinvoice-details" >
-            <Alert style={{ textDecoration: 'none' }} component={Link } to={'/product'}  severity="warning" sx={{
+            <Alert style={{ textDecoration: 'none' }} component={Link } to={'/product'} severity={alert.stock === 0 ? 'error' : 'warning'}  sx={{
 
                 padding: '1rem 1.5rem 1rem',
                 borderRadius: '16px',

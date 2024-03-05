@@ -145,6 +145,7 @@ const AddSalesInvoiceForm = () => {
             setEmptyFields(['customer_name'])
             return 
         }
+
         const response_customer = await fetch (`/customers/${customer_name}`,{
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -219,7 +220,7 @@ const AddSalesInvoiceForm = () => {
         <h3> Add a Sales Invoice</h3>
         <label> Invoice Number</label>
         <input 
-            type="text" onChange={(e)=> setInvoice_number(e.target.value)}
+            type="number" onChange={(e)=> setInvoice_number(e.target.value)}
             value={invoice_number}
 
            className={emptyFields.includes('invoice_number') ? 'error': ''}

@@ -129,7 +129,7 @@ async function modifyPdf(json) {
   secondPage.drawText(json.customer.TIN, { x: 312, y: 650, size: 11 })
   secondPage.drawText(json.payment_terms, { x: 312, y: 635, size: 11 })
   secondPage.drawText(json.reference_PO, { x: 312, y: 620, size: 11 })
-  secondPage.drawText(json.invoice_number, { x: 312, y: 605, size: 11 })
+  secondPage.drawText(json.invoice_number.toString(), { x: 312, y: 605, size: 11 })
 
   //purchase_list
   let y2 = 567
